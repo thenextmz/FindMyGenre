@@ -13,7 +13,7 @@ export default function Header({ navigation }) {
             navigation.openDrawer();
           }}
         >
-          <FontAwesome5 name={"bars"} size={20} color={COLORS.dark} />
+          <FontAwesome5 name={"bars"} size={20} color={COLORS.theme} />
         </TouchableOpacity>
 
         <View style={{ flex: 1 }}>
@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 18,
     fontWeight: "600",
-    color: COLORS.dark,
+    color: COLORS.theme,
   },
 });

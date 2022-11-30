@@ -1,7 +1,8 @@
 const COLORS = {
   lightGrey: "#9da39e",
-  theme: "#d45f6f",
-  dark: "#3b3939",
+  theme: "#6954a1",
+  theme_light: "#968bb3",
+  //dark: "#6954a1",
 };
 
 export { COLORS };

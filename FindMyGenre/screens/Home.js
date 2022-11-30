@@ -15,7 +15,7 @@ export default function Home({ navigation }) {
       <View style={styles.body}>
         <Header navigation={navigation} />
         <Divider
-          color={COLORS.dark}
+          color={COLORS.theme}
           width={1.2}
           style={{ marginBottom: 10, marginHorizontal: 10 }}
         />
@@ -28,7 +28,7 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white", //COLORS.theme,
+    backgroundColor: COLORS.theme_light, //COLORS.theme,
     flex: 1,
   },
   body: {
