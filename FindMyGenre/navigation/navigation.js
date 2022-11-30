@@ -2,6 +2,7 @@ import React from "react";
 import Home from "../screens/Home";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Menue from "../screens/Menue";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -11,7 +12,7 @@ function Root() {
     <Drawer.Navigator
       useLegacyImplementation={true}
       initialRouteName="Home"
-      // drawerContent={(props) => <Menue {...props} />}
+      drawerContent={(props) => <Menue {...props} />}
       screenOptions={{ headerShown: false }}
     >
       <Drawer.Screen name="Home" component={Home} />
