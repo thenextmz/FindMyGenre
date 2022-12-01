@@ -21,7 +21,7 @@ export default function ListenButton(props) {
       );
       props.setRecording(recording);
     } else {
-      setErrorMessage("Please grant permission to app to access microphone");
+      setErrorMessage("Allow microphone permissions!");
     }
   }
 

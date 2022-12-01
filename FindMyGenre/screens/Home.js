@@ -12,14 +12,16 @@ export default function Home({ navigation }) {
   const [mode, setMode] = useState(true);
   const [recording, setRecording] = React.useState(null);
   const [loading, setLoading] = useState(false);
+  const [genres, setGenres] = useState(false);
 
   const findGenre = () => {
     // TODO: send recording to Classifier
 
     // fake 2 seconds here
-    new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
-      setLoading(false)
-    );
+    new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
+      setLoading(false);
+      setGenres(true);
+    });
   };
 
   useEffect(() => {
@@ -47,6 +49,10 @@ export default function Home({ navigation }) {
           />
         )}
 
+        {mode && !loading && recording && genres && (
+          <GenreList navigation={navigation} />
+        )}
+
         {!mode && <GenreList navigation={navigation} />}
 
         {loading && (
@@ -54,8 +60,6 @@ export default function Home({ navigation }) {
             <ActivityIndicator size={40} color="black" />
           </View>
         )}
-
-        {!loading && recording && <GenreList navigation={navigation} />}
       </View>
     </SafeAreaView>
   );
