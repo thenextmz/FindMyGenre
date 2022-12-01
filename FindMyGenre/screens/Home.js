@@ -9,6 +9,7 @@ import ListenButton from "../components/home/ListenButton";
 
 export default function Home({ navigation }) {
   const [mode, setMode] = useState(true);
+  const [recording, setRecording] = React.useState(null);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -20,7 +21,9 @@ export default function Home({ navigation }) {
           style={{ marginBottom: 10, marginHorizontal: 10 }}
         />
         <ModeButtons mode={mode} setMode={setMode} />
-        {mode && <ListenButton />}
+        {mode && (
+          <ListenButton recording={recording} setRecording={setRecording} />
+        )}
       </View>
     </SafeAreaView>
   );
