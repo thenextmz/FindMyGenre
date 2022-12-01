@@ -3,6 +3,7 @@ import Home from "../screens/Home";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Menue from "../screens/Menue";
+import MusicView from "../screens/MusicView";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -25,6 +26,7 @@ const StackNavigator = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Root" component={Root} />
       <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="MusicView" component={MusicView} />
     </Stack.Navigator>
   );
 };

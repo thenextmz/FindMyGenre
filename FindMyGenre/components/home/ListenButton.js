@@ -6,7 +6,6 @@ import { Audio } from "expo-av";
 
 export default function ListenButton(props) {
   const [listening, setListening] = useState(false);
-  const [recording, setRecording] = React.useState();
   const [errorMessage, setErrorMessage] = React.useState("");
 
   async function record() {
@@ -20,31 +19,32 @@ export default function ListenButton(props) {
       const { recording } = await Audio.Recording.createAsync(
         Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
       );
-      setRecording(recording);
+      props.setRecording(recording);
     } else {
       setErrorMessage("Please grant permission to app to access microphone");
     }
   }
 
   async function stop() {
-    await recording.stopAndUnloadAsync();
+    await props.recording.stopAndUnloadAsync();
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       playsInSilentModeIOS: true,
     });
 
-    const { sound } = await recording.createNewLoadedSoundAsync();
-    setRecording({
+    const { sound } = await props.recording.createNewLoadedSoundAsync();
+    props.setRecording({
       sound: sound,
-      file: recording.getURI(),
+      file: props.recording.getURI(),
     });
+    props.setLoading(true);
   }
 
   return (
     <View
       style={[
         styles.container,
-        recording &&
+        props.recording &&
           !listening && {
             flexDirection: "row",
             justifyContent: "space-between",
@@ -79,11 +79,11 @@ export default function ListenButton(props) {
       {listening && <Text style={styles.listening}>Now Listening...</Text>}
       {errorMessage && <Text style={styles.listening}>{message}</Text>}
 
-      {recording && !listening && (
+      {props.recording && !listening && (
         <TouchableOpacity
           style={styles.playButton}
           onPress={() => {
-            recording.sound.replayAsync();
+            props.recording.sound.replayAsync();
           }}
         >
           <FontAwesome5 name={"play"} size={25} color={"white"} />
