@@ -111,7 +111,7 @@ export default function Listener(props) {
               <TouchableOpacity
                 activeOpacity={1}
                 onPress={() => {
-                  props.setCurrentlyRecording(!recording);
+                  props.setCurrentlyRecording(!props.recording);
                   stop(true);
                 }}
               >
