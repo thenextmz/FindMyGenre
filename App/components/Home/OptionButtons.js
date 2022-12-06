@@ -9,11 +9,11 @@ export default function OptionButtons({ navigation, ...props }) {
         activeOpacity={1}
         style={[
           styles.button,
-          props.active && { borderColor: COLORS.green, borderWidth: 1 },
+          props.mode == 0 && { borderColor: COLORS.green, borderWidth: 1 },
         ]}
         onPress={() => {
-          if (!props.active) {
-            props.setActive(!props.active);
+          if (props.mode !== 0) {
+            props.setMode(0);
           }
         }}
       >
@@ -24,16 +24,31 @@ export default function OptionButtons({ navigation, ...props }) {
         activeOpacity={1}
         style={[
           styles.button,
-          !props.active && { borderColor: COLORS.green, borderWidth: 1 },
+          props.mode == 1 && { borderColor: COLORS.green, borderWidth: 1 },
         ]}
         onPress={() => {
-          if (props.active) {
-            props.setActive(!props.active);
+          if (props.mode !== 1) {
+            props.setMode(1);
           }
         }}
       >
-        <Text style={styles.text}>Browse</Text>
+        <Text style={styles.text}>Genres</Text>
       </TouchableOpacity>
+
+      {/*<TouchableOpacity
+        activeOpacity={1}
+        style={[
+          styles.button,
+          props.mode == 2 && { borderColor: COLORS.green, borderWidth: 1 },
+        ]}
+        onPress={() => {
+          if (props.mode !== 2) {
+            props.setMode(2);
+          }
+        }}
+      >
+        <Text style={styles.}text}>Mood</Text>
+      </TouchableOpacity>*/}
     </View>
   );
 }

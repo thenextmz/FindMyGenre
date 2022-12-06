@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import React from "react";
 import { COLORS } from "../../colors";
+import { genres } from "../../mockupData/genres";
 
 export default function GenreList({ navigation }) {
   const renderItem = ({ item, index }) => {
@@ -27,11 +28,11 @@ export default function GenreList({ navigation }) {
     );
   };
 
-  let dummyArray = ["Pop", "Rock", "Metal", "Indie", "Gospel", "..."];
   return (
     <View style={styles.container}>
       <FlatList
-        data={dummyArray}
+        showsVerticalScrollIndicator={false}
+        data={genres}
         renderItem={renderItem}
         horizontal={false}
         numColumns={2}
@@ -42,10 +43,12 @@ export default function GenreList({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     marginHorizontal: 15,
     marginTop: 20,
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: 15,
   },
 
   genreButton: {
