@@ -46,7 +46,7 @@ export default function SongList({ navigation, ...props }) {
         style={[
           styles.songButton,
           index % 2 === 0 ? { marginRight: 2.5 } : { marginLeft: 2.5 },
-          item == props.song && { borderColor: COLORS.green, borderWidth: 1 },
+          item == props.song && { borderColor: COLORS.theme, borderWidth: 1 },
         ]}
       >
         <Text style={styles.name}>{songs[item].name}</Text>

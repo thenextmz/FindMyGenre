@@ -5,9 +5,47 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import LoadingDots from "react-native-loading-dots";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { Audio } from "expo-av";
 
 export default function Listener() {
+  const [currentlyRecording, setCurrentlyRecording] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [audio, setAudio] = useState(false);
+  const [playingAudio, setPlayingAudio] = useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+
+  async function record() {
+    const permission = await Audio.requestPermissionsAsync();
+    if (permission.status === "granted") {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
+      setRecording(recording);
+    } else {
+      setErrorMessage("Allow microphone permissions!");
+    }
+  }
+
+  async function stop() {
+    await recording.stopAndUnloadAsync();
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+    });
+
+    const { sound } = await recording.createNewLoadedSoundAsync();
+    setRecording({
+      sound: sound,
+      file: recording.getURI(),
+    });
+  }
+
   return (
     <View>
       <View style={styles.recordContainer}>
@@ -15,28 +53,29 @@ export default function Listener() {
           style={styles.button}
           activeOpacity={1}
           onPress={() => {
-            if (!recording) {
-              setRecording(!recording);
+            if (!currentlyRecording) {
+              setCurrentlyRecording(!currentlyRecording);
+              record();
             }
           }}
         >
           <FontAwesome5
             name={"record-vinyl"}
             size={23}
-            color={recording ? COLORS.green : "white"}
+            color={currentlyRecording ? COLORS.theme : "white"}
           />
-          {!recording && (
+          {!currentlyRecording && (
             <Text style={styles.text}>Press To Start Recording</Text>
           )}
         </TouchableOpacity>
-        {recording && (
+        {currentlyRecording && (
           <>
             <Text style={styles.text}>Recording Audio</Text>
             <LoadingDots
               dots={3}
               size={8}
               bounceHeight={5}
-              colors={[COLORS.green, COLORS.green, COLORS.green]}
+              colors={[COLORS.theme, COLORS.theme, COLORS.theme]}
             />
             <View
               style={{
@@ -48,14 +87,20 @@ export default function Listener() {
               <TouchableOpacity
                 activeOpacity={1}
                 style={{ marginRight: 10 }}
-                onPress={() => {}}
+                onPress={() => {
+                  setCurrentlyRecording(false);
+                  stop();
+                  //setAudio(true);
+                }}
               >
-                <Entypo name="save" size={23} color={COLORS.green} />
+                <Entypo name="save" size={23} color={COLORS.theme} />
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={1}
                 onPress={() => {
-                  setRecording(!recording);
+                  setCurrentlyRecording(!recording);
+                  stop();
+                  setRecording(false);
                 }}
               >
                 <AntDesign name="closesquare" size={23} color={COLORS.red} />
@@ -64,12 +109,74 @@ export default function Listener() {
           </>
         )}
       </View>
+
+      {recording && !currentlyRecording && (
+        <View style={styles.audioContainer}>
+          <MaterialIcons name="audiotrack" size={23} color={COLORS.theme} />
+          {!playingAudio ? (
+            <Text style={styles.text}>Recorded Audio</Text>
+          ) : (
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.text}>Playing Audio</Text>
+              <LoadingDots
+                dots={3}
+                size={8}
+                bounceHeight={5}
+                colors={[COLORS.theme, COLORS.theme, COLORS.theme]}
+              />
+            </View>
+          )}
+          <View style={styles.buttonView}>
+            {!playingAudio && (
+              <TouchableOpacity
+                activeOpacity={1}
+                style={{}}
+                onPress={() => {
+                  setPlayingAudio(!playingAudio);
+                  recording.sound.replayAsync();
+                }}
+              >
+                <AntDesign name="playcircleo" size={23} color={COLORS.theme} />
+              </TouchableOpacity>
+            )}
+
+            {playingAudio && (
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => {
+                  setPlayingAudio(!playingAudio);
+                  recording.sound.stopAsync();
+                }}
+              >
+                <AntDesign name="pause" size={23} color={COLORS.red} />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   recordContainer: {
+    backgroundColor: COLORS.dark2,
+    marginHorizontal: 10,
+    marginTop: 20,
+    height: 40,
+    borderRadius: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+
+  buttonView: {
+    flexDirection: "row",
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+
+  audioContainer: {
     backgroundColor: COLORS.dark2,
     marginHorizontal: 10,
     marginTop: 20,

@@ -9,7 +9,7 @@ export default function OptionButtons({ navigation, ...props }) {
         activeOpacity={1}
         style={[
           styles.button,
-          props.mode == 0 && { borderColor: COLORS.green, borderWidth: 1 },
+          props.mode == 0 && { borderColor: COLORS.theme, borderWidth: 1 },
         ]}
         onPress={() => {
           if (props.mode !== 0) {
@@ -24,7 +24,7 @@ export default function OptionButtons({ navigation, ...props }) {
         activeOpacity={1}
         style={[
           styles.button,
-          props.mode == 1 && { borderColor: COLORS.green, borderWidth: 1 },
+          props.mode == 1 && { borderColor: COLORS.theme, borderWidth: 1 },
         ]}
         onPress={() => {
           if (props.mode !== 1) {
@@ -39,7 +39,7 @@ export default function OptionButtons({ navigation, ...props }) {
         activeOpacity={1}
         style={[
           styles.button,
-          props.mode == 2 && { borderColor: COLORS.green, borderWidth: 1 },
+          props.mode == 2 && { borderColor: COLORS.theme, borderWidth: 1 },
         ]}
         onPress={() => {
           if (props.mode !== 2) {
