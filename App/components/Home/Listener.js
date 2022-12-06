@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { COLORS } from "../../colors";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -8,12 +8,8 @@ import LoadingDots from "react-native-loading-dots";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Audio } from "expo-av";
 
-export default function Listener() {
-  const [currentlyRecording, setCurrentlyRecording] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [audio, setAudio] = useState(false);
+export default function Listener(props) {
   const [playingAudio, setPlayingAudio] = useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
 
   async function record() {
     const permission = await Audio.requestPermissionsAsync();
@@ -26,25 +22,42 @@ export default function Listener() {
       const { recording } = await Audio.Recording.createAsync(
         Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
       );
-      setRecording(recording);
+      props.setRecording(recording);
     } else {
       setErrorMessage("Allow microphone permissions!");
     }
   }
 
-  async function stop() {
-    await recording.stopAndUnloadAsync();
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-      playsInSilentModeIOS: true,
-    });
+  async function stop(noRecording) {
+    await props.recording.stopAndUnloadAsync();
+    if (!noRecording) {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+      });
 
-    const { sound } = await recording.createNewLoadedSoundAsync();
-    setRecording({
-      sound: sound,
-      file: recording.getURI(),
-    });
+      const { sound, status } =
+        await props.recording.createNewLoadedSoundAsync();
+      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+
+      props.setRecording({
+        sound: sound,
+        file: props.recording.getURI(),
+        status: status,
+      });
+    } else {
+      props.setRecording(false);
+    }
   }
+
+  async function playAudio() {
+    props.recording.sound.replayAsync();
+    const result = await props.recording.sound.getStatusAsync();
+  }
+
+  const onPlaybackStatusUpdate = (status) => {
+    setPlayingAudio(status.isPlaying);
+  };
 
   return (
     <View>
@@ -53,8 +66,8 @@ export default function Listener() {
           style={styles.button}
           activeOpacity={1}
           onPress={() => {
-            if (!currentlyRecording) {
-              setCurrentlyRecording(!currentlyRecording);
+            if (!props.currentlyRecording) {
+              props.setCurrentlyRecording(true);
               record();
             }
           }}
@@ -62,13 +75,13 @@ export default function Listener() {
           <FontAwesome5
             name={"record-vinyl"}
             size={23}
-            color={currentlyRecording ? COLORS.theme : "white"}
+            color={props.currentlyRecording ? COLORS.theme : "white"}
           />
-          {!currentlyRecording && (
+          {!props.currentlyRecording && (
             <Text style={styles.text}>Press To Start Recording</Text>
           )}
         </TouchableOpacity>
-        {currentlyRecording && (
+        {props.currentlyRecording && (
           <>
             <Text style={styles.text}>Recording Audio</Text>
             <LoadingDots
@@ -88,8 +101,8 @@ export default function Listener() {
                 activeOpacity={1}
                 style={{ marginRight: 10 }}
                 onPress={() => {
-                  setCurrentlyRecording(false);
-                  stop();
+                  props.setCurrentlyRecording(false);
+                  stop(false);
                   //setAudio(true);
                 }}
               >
@@ -98,9 +111,8 @@ export default function Listener() {
               <TouchableOpacity
                 activeOpacity={1}
                 onPress={() => {
-                  setCurrentlyRecording(!recording);
-                  stop();
-                  setRecording(false);
+                  props.setCurrentlyRecording(!recording);
+                  stop(true);
                 }}
               >
                 <AntDesign name="closesquare" size={23} color={COLORS.red} />
@@ -110,11 +122,14 @@ export default function Listener() {
         )}
       </View>
 
-      {recording && !currentlyRecording && (
+      {props.recording && !props.currentlyRecording && (
         <View style={styles.audioContainer}>
           <MaterialIcons name="audiotrack" size={23} color={COLORS.theme} />
           {!playingAudio ? (
-            <Text style={styles.text}>Recorded Audio</Text>
+            <Text style={styles.text}>
+              Recorded Audio (
+              {(props.recording?.status?.durationMillis / 1000).toFixed(1)}s)
+            </Text>
           ) : (
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.text}>Playing Audio</Text>
@@ -133,7 +148,7 @@ export default function Listener() {
                 style={{}}
                 onPress={() => {
                   setPlayingAudio(!playingAudio);
-                  recording.sound.replayAsync();
+                  playAudio();
                 }}
               >
                 <AntDesign name="playcircleo" size={23} color={COLORS.theme} />
@@ -145,7 +160,7 @@ export default function Listener() {
                 activeOpacity={1}
                 onPress={() => {
                   setPlayingAudio(!playingAudio);
-                  recording.sound.stopAsync();
+                  props.recording.sound.stopAsync();
                 }}
               >
                 <AntDesign name="pause" size={23} color={COLORS.red} />
