@@ -33,7 +33,6 @@ export default function OptionButtons({ navigation, ...props }) {
         ]}
         onPress={() => {
           if (props.mode !== 1) {
-            console.log(props.currentlyRecording);
             if (props.currentlyRecording) {
               props.setCurrentlyRecording(false);
               props.setRecording(false);
