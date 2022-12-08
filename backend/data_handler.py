@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import os
-import librosa
 import sklearn as skl
 
 class DataHandler:

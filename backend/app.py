@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, render_template, request, session
-from neural_network import GenreNeuralNetwork
+#from neural_network import GenreNeuralNetwork
 from data_handler import DataHandler
 
 app = Flask('FindMyGenre')
@@ -14,7 +14,7 @@ def home():
 def main():
     data_handler.read('data/fma_metadata/')
 
-    app.run(port=9876)
+    app.run(host="0.0.0.0", port=12345)
 
 
 
