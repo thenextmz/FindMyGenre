@@ -13,6 +13,8 @@ class DataHandler:
         self._mfcc_train = pd.DataFrame()
         self._mfcc_test = pd.DataFrame()
 
+        self._target_mapping = {}
+
     def read(self, path):
         try:
             dataset_target = pd.read_csv(path+'tracks.csv', index_col=0, header=[0,1], low_memory=False)
@@ -21,33 +23,51 @@ class DataHandler:
             print('Could not find file')
             return -1
 
-        dataset_target.dropna()
-
+        # Create indexes for different dataframes
         small = dataset_target['set', 'subset'] <= 'small'
         train = dataset_target['set', 'split'] == 'training'
         val = dataset_target['set', 'split'] == 'validation'
         test = dataset_target['set', 'split'] == 'test'
 
+        # Create test and train datasets
         self._genres_train = dataset_target.loc[small & train, ('track', 'genre_top')]
         self._genres_test = dataset_target.loc[small & test, ('track', 'genre_top')]
         self._mfcc_train = dataset_feature.loc[small & train, 'mfcc']
         self._mfcc_test = dataset_feature.loc[small & test, 'mfcc']
 
-        // TODO Michael remove lines with nan
+        train_data = pd.concat([self._mfcc_train, self._genres_train], axis=1)
+        test_data = pd.concat([self._mfcc_test, self._genres_test], axis=1)
 
+        # Drop lines with nan
+        train_data = train_data.dropna()
+        test_data = test_data.dropna()
+
+        self._mfcc_train = train_data
+        self._genres_train = self._mfcc_train.pop(('track', 'genre_top'))
+
+        self._mfcc_test = test_data
+        self._genres_test = self._mfcc_test.pop(('track', 'genre_top'))
+
+        # Replace unique names of genre to a unique number
+        unique_targets = np.unique(self._genres_train.values)
+        for index, key in enumerate(unique_targets):
+            self._target_mapping[key] = index
+        self._genres_train = self._genres_train.replace(self._target_mapping.keys(), self._target_mapping.values())
+        self._genres_test = self._genres_test.replace(self._target_mapping.keys(), self._target_mapping.values())
+
+        # Shuffle data
         self._mfcc_train, self._genres_train = skl.utils.shuffle(self._mfcc_train, self._genres_train, random_state=9876)
 
         scaler = skl.preprocessing.StandardScaler(copy=False)
         scaler.fit_transform(self._mfcc_train)
         scaler.transform(self._mfcc_test)
 
-        '''clf = skl.svm.SVC()
+        '''print("Fit data")
+        clf = skl.svm.SVC()
         clf.fit(self._mfcc_train, self._genres_train)
+        print("Evaluate")
         score = clf.score(self._mfcc_test, self._genres_test)
         print('Accuracy: {:.2%}'.format(score))'''
-
-    def __getitem__(self, item):
-        return self._genres[item]
 
     @property
     def genres_train(self):
