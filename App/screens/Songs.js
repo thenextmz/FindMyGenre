@@ -4,7 +4,6 @@ import { COLORS } from "../colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GenreHeader from "../components/Songs/GenreHeader";
 import SongList from "../components/Songs/SongList";
-import { songs } from "../mockupData/songs";
 
 export default function Songs({ navigation, route }) {
   const { genre } = route.params;
@@ -14,33 +13,11 @@ export default function Songs({ navigation, route }) {
     return (
       <View style={styles.container}>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <Text style={styles.name}>{songs[song].name}</Text>
+          <Text style={styles.name}>{song.song}</Text>
         </View>
 
         <View style={styles.container2}>
-          <Text style={styles.artist}>Artist(s): </Text>
-          {songs[song].artists.map((artist, index) => {
-            return (
-              <Text key={index} style={styles.artist}>
-                {index !== songs[song].artists.length - 1
-                  ? artist + ", "
-                  : artist}
-              </Text>
-            );
-          })}
-        </View>
-
-        <View style={styles.container2}>
-          <Text style={styles.genre}>Genre(s): </Text>
-          {songs[song].genres.map((genres, index) => {
-            return (
-              <Text key={index} style={styles.genre}>
-                {index !== songs[song].genres.length - 1
-                  ? genres + ", "
-                  : genres}
-              </Text>
-            );
-          })}
+          <Text style={styles.artist}>Artist: {song.artist}</Text>
         </View>
       </View>
     );
