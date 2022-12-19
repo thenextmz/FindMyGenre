@@ -24,8 +24,15 @@ def getSongsByGenre():
                     songList.append({"artist": data["artist_name"][i], "song": data["track_title"][i]})
         except:
             pass
-    return songList  
+    return songList
 
+@app.route('/uploadAudio', methods=['POST'])
+def uploadAudio():
+    data = request.get_data()
+    # TODO: convert + process data
+    return "Rock"
+        
+        
 
 @app.route('/', methods=['GET'])
 @app.route('/index/', methods=['GET'])
