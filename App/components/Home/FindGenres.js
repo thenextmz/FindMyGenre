@@ -17,13 +17,14 @@ export default function FindGenres({ navigation, ...props }) {
 
   async function getGenreFromPython() {
     try {
+      console.log(props.recording.file);
       const response = await FileSystem.uploadAsync(
         "http://10.0.0.26:12345/uploadAudio",
         props.recording.file
       );
-
+      console.log(response);
       new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
-        setBackendAnswer("Rock");
+        setBackendAnswer(response.body);
         setLoading(false);
       });
     } catch (err) {
