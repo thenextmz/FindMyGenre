@@ -13,6 +13,9 @@ class DataHandler:
 
         self._target_mapping = {}
 
+        self._different_genres_names = []
+        self._different_genres = []
+
     def read(self, path):
         try:
             dataset_target = pd.read_csv(path+'tracks.csv', index_col=0, header=[0,1], low_memory=False)
@@ -48,6 +51,9 @@ class DataHandler:
 
         # Replace unique names of genre to a unique number
         unique_targets = np.unique(self._genres_train.values)
+        self._different_genres_names = unique_targets
+        self._different_genres = [i for i in range(len(self._different_genres_names))]
+
         for index, key in enumerate(unique_targets):
             self._target_mapping[key] = index
         self._genres_train = self._genres_train.replace(self._target_mapping.keys(), self._target_mapping.values())
@@ -82,6 +88,14 @@ class DataHandler:
     @property
     def mfcc_test(self):
         return self._mfcc_test
+
+    @property
+    def different_genres_names(self):
+        return self._different_genres_names
+
+    @property
+    def different_genres(self):
+        return self._different_genres
 
 
 
