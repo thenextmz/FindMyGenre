@@ -20,7 +20,7 @@ export default function Listener(props) {
       });
 
       const { recording } = await Audio.Recording.createAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+          Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
       props.setRecording(recording);
     } else {

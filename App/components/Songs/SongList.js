@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { COLORS } from "../../colors";
+import { uri } from "../../ip";
 
 export default function SongList({ navigation, ...props }) {
   const [songArr, setSongArr] = useState(false);
@@ -22,12 +23,12 @@ export default function SongList({ navigation, ...props }) {
 
   const getSongs = async () => {
     setLoading(true);
-    fetch("http://10.0.0.26:12345/getSongsByGenre?genre=" + props.genre)
+    fetch(uri + "/getSongsByGenre?genre=" + props.genre)
       .then((response) => response.json())
       .then((json) => {
         // randomly sorting array
         json.sort(() => Math.random() - 0.5);
-        // displaying firstt 100 random songs
+        // displaying first 100 random songs
         setSongArr(json.slice(0, 100));
       })
       .catch((error) => {
