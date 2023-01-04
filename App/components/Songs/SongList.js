@@ -22,7 +22,6 @@ export default function SongList({ navigation, ...props }) {
   });
 
   const getSongs = async () => {
-    setLoading(true);
     fetch(uri + "/getSongsByGenre?genre=" + props.genre)
       .then((response) => response.json())
       .then((json) => {
@@ -30,12 +29,11 @@ export default function SongList({ navigation, ...props }) {
         json.sort(() => Math.random() - 0.5);
         // displaying first 100 random songs
         setSongArr(json.slice(0, 100));
+        setLoading(false);
       })
       .catch((error) => {
         console.error(error);
-      });
-
-    setLoading(false);
+      });    
   };
 
   const renderItem = ({ item, index }) => {
@@ -72,7 +70,7 @@ export default function SongList({ navigation, ...props }) {
             //initialNumToRender={20}
             //windowSize={20}
             onEndReached={() => {
-              setEndReached(true);
+              //setEndReached(true);
             }}
           />
         </>
