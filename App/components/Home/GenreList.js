@@ -32,7 +32,7 @@ export default function GenreList({ navigation }) {
     <View style={styles.container}>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={genres}
+        data={genres.sort()}
         renderItem={renderItem}
         horizontal={false}
         numColumns={2}
