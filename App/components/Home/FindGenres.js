@@ -9,17 +9,28 @@ import React, { useState } from "react";
 import { COLORS } from "../../colors";
 import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import * as FileSystem from "expo-file-system";
+import { uri } from "../../ip";
 
 export default function FindGenres({ navigation, ...props }) {
   const [backendAnswer, setBackendAnswer] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function getGenreFromPython() {
-    // TODO: Implement
-    new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
-      setLoading(false);
-      setBackendAnswer("Rock");
-    });
+    try {
+      console.log(props.recording.file);
+      const response = await FileSystem.uploadAsync(
+        uri + "/uploadAudio",
+        props.recording.file
+      );
+      console.log(response);
+      new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
+        setBackendAnswer(response.body);
+        setLoading(false);
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (

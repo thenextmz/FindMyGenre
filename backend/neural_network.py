@@ -26,7 +26,7 @@ class ScikitFeatDataset(torch.utils.data.Dataset):
         return self.X[idx], self.y[idx]
 
 class GenreNeuralNetwork:
-    def __init__(self, data):
+    '''def __init__(self, data):
         self._data = data
         dataset = ScikitFeatDataset(self._data.mfcc_train.to_numpy(), self._data.genres_train.to_numpy())
         self._train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=64)
@@ -34,10 +34,10 @@ class GenreNeuralNetwork:
         dataset = ScikitFeatDataset(self._data.mfcc_test.to_numpy(), self._data.genres_test.to_numpy())
         self._val_dataloader = torch.utils.data.DataLoader(dataset)
         self._model = torch.load('model')
+    '''
 
-
-    #def __init__(self):
-    #    self._model = torch.load('model_without_softmax')
+    def __init__(self):
+        self._model = torch.load('model')
     def _train_func(self, model, train_dataloader, loss_function, optimiser):
         model.train()
         running_loss = 0

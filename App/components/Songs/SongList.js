@@ -8,11 +8,12 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { COLORS } from "../../colors";
-import { songs } from "../../mockupData/songs";
+import { uri } from "../../ip";
 
 export default function SongList({ navigation, ...props }) {
   const [songArr, setSongArr] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [endReached, setEndReached] = useState(true);
 
   useEffect(() => {
     if (!songArr) {
@@ -20,16 +21,20 @@ export default function SongList({ navigation, ...props }) {
     }
   });
 
-  const getSongs = () => {
+  const getSongs = async () => {
     setLoading(true);
-    let tmp = [];
-    for (var song in songs) {
-      let index = songs[song].genres.findIndex((genre) => genre == props.genre);
-      if (index !== -1) {
-        tmp.push(song);
-      }
-    }
-    setSongArr(tmp);
+    fetch(uri + "/getSongsByGenre?genre=" + props.genre)
+      .then((response) => response.json())
+      .then((json) => {
+        // randomly sorting array
+        json.sort(() => Math.random() - 0.5);
+        // displaying first 100 random songs
+        setSongArr(json.slice(0, 100));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
     setLoading(false);
   };
 
@@ -49,7 +54,7 @@ export default function SongList({ navigation, ...props }) {
           item == props.song && { borderColor: COLORS.theme, borderWidth: 1 },
         ]}
       >
-        <Text style={styles.name}>{songs[item].name}</Text>
+        <Text style={styles.name}>{item.song}</Text>
       </TouchableOpacity>
     );
   };
@@ -57,12 +62,19 @@ export default function SongList({ navigation, ...props }) {
   return (
     <View style={styles.container}>
       {!loading && songArr && (
-        <FlatList
-          data={songArr}
-          renderItem={renderItem}
-          horizontal={false}
-          numColumns={2}
-        />
+        <>
+          <FlatList
+            data={songArr}
+            renderItem={renderItem}
+            horizontal={false}
+            numColumns={2}
+            initialNumToRender={20}
+            windowSize={20}
+            onEndReached={() => {
+              setEndReached(true);
+            }}
+          />
+        </>
       )}
 
       {loading && (
@@ -81,6 +93,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     flex: 1,
+    flexDirection: "column",
   },
 
   songButton: {
