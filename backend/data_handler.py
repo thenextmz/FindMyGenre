@@ -33,6 +33,10 @@ class DataHandler:
         # Create test and train datasets
         self._genres_train = dataset_target.loc[small & train, ('track', 'genre_top')]
         self._genres_test = dataset_target.loc[small & test, ('track', 'genre_top')]
+        #self._mfcc_train = dataset_feature.loc[small & train, ['mfcc','chroma_stft','spectral_centroid','rmse']]
+        #self._mfcc_test = dataset_feature.loc[small & test, ['mfcc','chroma_stft','spectral_centroid','rmse']]
+
+
         self._mfcc_train = dataset_feature.loc[small & train, 'mfcc']
         self._mfcc_test = dataset_feature.loc[small & test, 'mfcc']
 
@@ -53,6 +57,7 @@ class DataHandler:
         unique_targets = np.unique(self._genres_train.values)
         self._different_genres_names = unique_targets
         self._different_genres = [i for i in range(len(self._different_genres_names))]
+        print(f"Genres: {self._different_genres_names}\nGenre numbers: {self._different_genres}")
 
         for index, key in enumerate(unique_targets):
             self._target_mapping[key] = index

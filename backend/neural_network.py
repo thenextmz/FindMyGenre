@@ -3,10 +3,18 @@ import pandas as pd
 import numpy as np
 import optuna
 import sklearn.metrics
+from mp3_to_mfcc_converter import MP3toSoundStats
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.colors import LogNorm
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 EPOCHS = 4
 
+#Genres: ['Blues' 'Classical' 'Country' 'Easy Listening' 'Electronic'
+# 'Experimental' 'Folk' 'Hip-Hop' 'Instrumental' 'International' 'Jazz'
+# 'Old-Time / Historic' 'Pop' 'Rock' 'Soul-RnB' 'Spoken']
+#Genre numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 class ScikitFeatDataset(torch.utils.data.Dataset):
     def __init__(self, X: np.array, y: np.array):
@@ -19,13 +27,17 @@ class ScikitFeatDataset(torch.utils.data.Dataset):
 
 class GenreNeuralNetwork:
     def __init__(self, data):
-        self._model = None
         self._data = data
         dataset = ScikitFeatDataset(self._data.mfcc_train.to_numpy(), self._data.genres_train.to_numpy())
-        self._train_dataloader = torch.utils.data.DataLoader(dataset)
+        self._train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=64)
+        self._test_dataloader = torch.utils.data.DataLoader(dataset)
         dataset = ScikitFeatDataset(self._data.mfcc_test.to_numpy(), self._data.genres_test.to_numpy())
         self._val_dataloader = torch.utils.data.DataLoader(dataset)
+        self._model = torch.load('model')
 
+
+    #def __init__(self):
+    #    self._model = torch.load('model_without_softmax')
     def _train_func(self, model, train_dataloader, loss_function, optimiser):
         model.train()
         running_loss = 0
@@ -54,13 +66,14 @@ class GenreNeuralNetwork:
                 y_real += [y.cpu().detach().numpy()]
             validation_loss = running_loss / len(val_dataloader)
             accuracy = sklearn.metrics.accuracy_score(y_real, outputs)
+            print(accuracy)
         return validation_loss, accuracy, outputs, y_real
 
     def _define_model(self, trial):
         layers = []
         activation_function_selection = {"ReLU": torch.nn.ReLU(),
-                                         "Softmax": torch.nn.Softmax(dim=1),
-                                         "Sigmoid": torch.nn.Sigmoid(),
+                                         #"Softmax": torch.nn.Softmax(dim=1),
+                                         #"Sigmoid": torch.nn.Sigmoid(),
                                          "None": None}
         input_units = self._data.mfcc_train.to_numpy().shape[1]
         n_layers = trial.suggest_int("n_layers", 0, 12)
@@ -101,36 +114,65 @@ class GenreNeuralNetwork:
 
     def fit(self):
         input_units = self._data.mfcc_train.shape[1]
+        print(input_units)
         output_units = len(np.unique(self._data.genres_train))
 
-        # 0.555
-        #layer = [torch.nn.Linear(input_units, 61),
-        #    torch.nn.Sigmoid(),
-        #    torch.nn.Linear(61, output_units),
-        #    torch.nn.Softmax(dim=1)]
-
-        # 0.583
-        layer = [
-            torch.nn.Linear(input_units, 61),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(61, output_units)]
-
+        layer = [torch.nn.Linear(input_units, 150),
+            torch.nn.ReLU(),
+            torch.nn.Linear(150, output_units),
+            torch.nn.Softmax(dim=1)]
 
         model = torch.nn.Sequential(*layer).to(DEVICE)
         loss_function = torch.nn.CrossEntropyLoss()
-        optimiser = torch.optim.Adam(model.parameters(), lr=0.00036570505894471393)
+        optimiser = torch.optim.Adam(model.parameters(), lr=0.0003)
 
         validation_loss = 0
-        for _ in range(10):
+        print("Start")
+        accuracies = []
+        losses = []
+        outputs = []
+        y_real = []
+        for i in range(14):
             self._train_func(model, self._train_dataloader, loss_function, optimiser)
             validation_loss_ep, accuracy, outputs, y_real = self._val_func(model, self._val_dataloader, loss_function)
             validation_loss += validation_loss_ep
+            accuracies.append(accuracy)
+            losses.append(validation_loss_ep)
+            print(str(i+1) + " / 14 (accuracy: " + str(accuracy) + ")")
+
+        plt.rcParams.update({'font.size': 18})
+        fig, ax = plt.subplots(3,1, figsize=(10,18))
+        ax[0].plot(accuracies)
+        ax[0].set_xlabel('epoch')
+        ax[0].set_ylabel('accuracy')
+        ax[1].plot(losses)
+        ax[1].set_xlabel('epoch')
+        ax[1].set_ylabel('loss')
+
+        conf_matrix = sklearn.metrics.confusion_matrix(y_real, outputs)
+        for i in range(len(y_real)):
+            print(y_real[i], " - ", outputs[i])
+        sns.heatmap(conf_matrix, ax=ax[2], norm=LogNorm())
+        ax[2].set_xlabel('true value')
+        ax[2].set_ylabel('predicted value')
+        plt.show()
+        plt.savefig('graphics.pdf')
 
         self._model = model
+        torch.save(self._model, 'model')
 
-    def predict(self, x):
+    def predict(self, path):
         if self._model is None:
             print("Train network before predicting")
             return
+
+        sound_stats = MP3toSoundStats(path)
+        sound_stats = sound_stats.reshape((1,-1))
+        print(sound_stats.shape)
+        res =  self._model(torch.Tensor(sound_stats))
+        print(res)
+        res = res.argmax(dim=1).cpu().detach().numpy()
+        return res
+
 
 
