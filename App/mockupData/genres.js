@@ -1,5 +1,4 @@
 const genres = [
-  ,
   "Avant-Garde",
   "International",
   "Blues",

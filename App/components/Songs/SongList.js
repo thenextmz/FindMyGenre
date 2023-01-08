@@ -22,7 +22,6 @@ export default function SongList({ navigation, ...props }) {
   });
 
   const getSongs = async () => {
-    setLoading(true);
     fetch(uri + "/getSongsByGenre?genre=" + props.genre)
       .then((response) => response.json())
       .then((json) => {
@@ -30,12 +29,11 @@ export default function SongList({ navigation, ...props }) {
         json.sort(() => Math.random() - 0.5);
         // displaying first 100 random songs
         setSongArr(json.slice(0, 100));
+        setLoading(false);
       })
       .catch((error) => {
         console.error(error);
-      });
-
-    setLoading(false);
+      });    
   };
 
   const renderItem = ({ item, index }) => {
@@ -54,7 +52,7 @@ export default function SongList({ navigation, ...props }) {
           item == props.song && { borderColor: COLORS.theme, borderWidth: 1 },
         ]}
       >
-        <Text style={styles.name}>{item.song}</Text>
+        <Text numberOfLines={1} style={styles.name}>{item.song}</Text>
       </TouchableOpacity>
     );
   };
@@ -65,13 +63,14 @@ export default function SongList({ navigation, ...props }) {
         <>
           <FlatList
             data={songArr}
+            showsVerticalScrollIndicator={false}
             renderItem={renderItem}
             horizontal={false}
             numColumns={2}
-            initialNumToRender={20}
-            windowSize={20}
+            //initialNumToRender={20}
+            //windowSize={20}
             onEndReached={() => {
-              setEndReached(true);
+              //setEndReached(true);
             }}
           />
         </>
@@ -104,13 +103,16 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     marginBottom: 5,
-    marginRight: 0,
+    //paddingHorizontal: 10,
+    //marginRight: 0,
+    marginHorizontal: 5
   },
 
   name: {
     color: COLORS.text,
     fontSize: 14,
     fontWeight: "bold",
+    paddingHorizontal: 10,
   },
 
   artist: {
