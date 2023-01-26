@@ -1,3 +1,4 @@
-__pychache__/
+__pycache__/
 data/
 tmpAudioRecording.mp3
+yarn-error.log
