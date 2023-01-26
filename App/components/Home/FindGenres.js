@@ -23,9 +23,9 @@ export default function FindGenres({ navigation, ...props }) {
         uri + "/uploadAudio",
         props.recording.file
       );
-      console.log(response);
+      // console.log(JSON.parse(response.body));
       new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
-        setBackendAnswer(response.body);
+        setBackendAnswer(JSON.parse(response.body));
         setLoading(false);
       });
     } catch (err) {
@@ -58,16 +58,45 @@ export default function FindGenres({ navigation, ...props }) {
           <View style={styles.arrowView}>
             <AntDesign name={"arrowdown"} size={23} color={"white"} />
           </View>
-          <TouchableOpacity
-            style={styles.answerView}
-            onPress={() => {
-              navigation.navigate("Songs", {
-                genre: backendAnswer,
-              });
-            }}
-          >
-            <Text style={styles.answerText}>{backendAnswer}</Text>
-          </TouchableOpacity>
+          <View style={styles.multipleView}>
+            <TouchableOpacity
+              style={styles.answerView}
+              onPress={() => {
+                navigation.navigate("Songs", {
+                  genre: backendAnswer[0],
+                });
+              }}
+            >
+              <Text style={styles.answerText}>{backendAnswer[0]}</Text>
+              <Text style={styles.predictionAlgo}>GenreNeuralNetwork</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.answerView}
+              onPress={() => {
+                navigation.navigate("Songs", {
+                  genre: backendAnswer[1],
+                });
+              }}
+            >
+              <Text style={styles.answerText}>{backendAnswer[1]}</Text>
+              <Text style={styles.predictionAlgo}>GenreNeuralNetwork2D</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.answerView}
+              onPress={() => {
+                navigation.navigate("Songs", {
+                  genre: backendAnswer[2],
+                });
+              }}
+            >
+              <Text style={styles.answerText}>{backendAnswer[2]}</Text>
+              <Text style={styles.predictionAlgo}>
+                GenreNeuralNetwork2DTransferLearned
+              </Text>
+            </TouchableOpacity>
+          </View>
         </>
       )}
     </View>
@@ -89,7 +118,7 @@ const styles = StyleSheet.create({
   },
 
   answerView: {
-    marginTop: 0,
+    marginBottom: 20,
     alignItems: "center",
     alignSelf: "center",
     backgroundColor: COLORS.dark2,
@@ -101,12 +130,10 @@ const styles = StyleSheet.create({
   },
 
   arrowView: {
-    marginTop: 0,
     alignItems: "center",
     alignSelf: "center",
-
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
     borderRadius: 5,
   },
 
@@ -114,5 +141,15 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     color: COLORS.text,
+  },
+
+  predictionAlgo: {
+    fontSize: 15,
+    color: COLORS.text,
+    alignSelf: "flex-start",
+  },
+
+  multipleView: {
+    //flexDirection: "row",
   },
 });
