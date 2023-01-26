@@ -199,11 +199,9 @@ class GenreNeuralNetwork2D:
         dataset = ScikitFeatDataset(test_mfcc, self._data.genres_test.to_numpy())
 
         self._val_dataloader = torch.utils.data.DataLoader(dataset)
-        self._model = 0#torch.load('model')
+        self._model = torch.load('model_conv2d')
         self._epochs = epochs
 
-    #def __init__(self):
-    #    self._model = torch.load('model')
     def _train_func(self, model, train_dataloader, loss_function, optimiser):
         model.train()
         running_loss = 0

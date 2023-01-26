@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, render_template, request, session
-from neural_network import GenreNeuralNetwork
+from neural_network import GenreNeuralNetwork, GenreNeuralNetwork2D, GenreNeuralNetwork2DTransferLearned
 from data_handler import DataHandler
 import os
 import json
@@ -11,10 +11,12 @@ import io
 Genres = ['Blues','Classical','Country','Easy Listening','Electronic','Experimental','Folk','Hip-Hop','Instrumental','International','Jazz','Old-Time / Historic','Pop','Rock','Soul-RnB','Spoken']
 
 app = Flask('FindMyGenre')
-#data_handler = DataHandler()
-#data_handler.read('data/fma_metadata/')
-#neural_network = GenreNeuralNetwork(data_handler)
-neural_network = GenreNeuralNetwork()
+data_handler = DataHandler()
+data_handler.read('data/fma_metadata/')
+neural_network_2d_transfer_learning = GenreNeuralNetwork2DTransferLearned(data_handler, 10)
+neural_network_2d = GenreNeuralNetwork2D(data_handler, 10)
+neural_network = GenreNeuralNetwork(data_handler, 10)
+
 data = pd.read_csv(os.getcwd() + "/data/fma_metadata/raw_tracks.csv")
 
 
@@ -40,7 +42,9 @@ def uploadAudio():
     song.export('tmpAudioRecording.mp3', format="mp3")
 
     prediction = neural_network.predict('tmpAudioRecording.mp3')
-    return Genres[prediction]
+    prediction_2d = neural_network_2d.predict('tmpAudioRecording.mp3')
+    prediction_2d_transfer_learning = neural_network_2d_transfer_learning.predict('tmpAudioRecording.mp3')
+    return Genres[prediction], Genres[prediction_2d], Genres[prediction_2d_transfer_learning]
 
 
 
@@ -54,6 +58,7 @@ def main():
     #neural_network.searchModel()
     #neural_network.fit()
     '''
+
     result = neural_network.predict(os.getcwd() + '/data/fma_small/000/000194.mp3')
     print(result)
     result = neural_network.predict(os.getcwd() + '/data/fma_small/000/000193.mp3')
@@ -80,7 +85,6 @@ def main():
     print(result)
 
     '''
-
 
 
     app.run(host="0.0.0.0", port=12345)
