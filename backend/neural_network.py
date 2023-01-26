@@ -41,7 +41,7 @@ class GenreNeuralNetwork:
         test_mfcc = self._data.mfcc_test.to_numpy()
         dataset = ScikitFeatDataset(test_mfcc, self._data.genres_test.to_numpy())
         self._val_dataloader = torch.utils.data.DataLoader(dataset)
-        self._model = 0#torch.load('model')
+        self._model = torch.load('model')
         self._epochs = epochs
 
 
@@ -319,7 +319,7 @@ class GenreNeuralNetwork2DTransferLearned:
         self._test_genre = self._data.genres_test.to_numpy()
         self._test_genre = tf.keras.utils.to_categorical(self._test_genre, dtype="uint8")
 
-        self._model = 0#tf.keras.models.load_model('model_conv2d_transfer_learning')
+        self._model = tf.keras.models.load_model('model_conv2d_transfer_learning')
         self._epochs = epochs
 
     #def __init__(self):
