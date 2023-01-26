@@ -186,19 +186,19 @@ class GenreNeuralNetwork2D:
     def __init__(self, data, epochs = 10):
         self._data = data
         train_mfcc = self._data.mfcc_train.to_numpy()
-        train_mfcc = train_mfcc.reshape((train_mfcc.shape[0], 14, 10))
         train_mfcc = np.repeat(train_mfcc[..., np.newaxis], 3, -1)
+        train_mfcc = train_mfcc.reshape((train_mfcc.shape[0], 3, 14, 10))
         train_genre = self._data.genres_train.to_numpy()
         dataset = ScikitFeatDataset(train_mfcc, train_genre)
 
         self._train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=64)
 
         test_mfcc = self._data.mfcc_test.to_numpy()
-        test_mfcc = test_mfcc.reshape((test_mfcc.shape[0], 14, 10))
         test_mfcc = np.repeat(test_mfcc[..., np.newaxis], 3, -1)
+        test_mfcc = test_mfcc.reshape((test_mfcc.shape[0], 3, 14, 10))
         dataset = ScikitFeatDataset(test_mfcc, self._data.genres_test.to_numpy())
 
-        self._val_dataloader = torch.utils.data.DataLoader(dataset)
+        self._val_dataloader = torch.utils.data.DataLoader(dataset, batch_size=64)
         self._model = torch.load('model_conv2d')
         self._epochs = epochs
 
@@ -209,6 +209,7 @@ class GenreNeuralNetwork2D:
             optimiser.zero_grad()
             X = X.to(DEVICE, dtype=torch.float)
             y = y.to(DEVICE, dtype=torch.long)
+
             output = model(X)
             loss = loss_function(output, y)
             loss.backward()
@@ -223,25 +224,29 @@ class GenreNeuralNetwork2D:
             for X, y in val_dataloader:
                 X = X.to(DEVICE, dtype=torch.float)
                 y = y.to(DEVICE, dtype=torch.long)
+
                 output = model(X)
                 loss = loss_function(output, y)
                 running_loss += loss * len(X)
-                outputs += [output.argmax(dim=1).cpu().detach().numpy()]
-                y_real += [y.cpu().detach().numpy()]
+                outputs += output.argmax(dim=1).cpu().detach().numpy().tolist()
+                y_real += y.cpu().detach().numpy().tolist()
             validation_loss = running_loss / len(val_dataloader)
+            y_real = np.array(y_real)
+            y_real.flatten()
+            outputs = np.array(outputs)
+            outputs.flatten()
             accuracy = sklearn.metrics.accuracy_score(y_real, outputs)
             print(accuracy)
         return validation_loss, accuracy, outputs, y_real
     def fit(self):
-        input_units = self._data.mfcc_train.shape[1]
-        print(input_units)
         output_units = len(np.unique(self._data.genres_train))
 
         layer = [
             torch.nn.Conv2d(3, 32, kernel_size=3),
             torch.nn.Conv2d(32, 16, kernel_size=3),
+            torch.nn.MaxPool2d(kernel_size=3),
             torch.nn.Flatten(),
-            torch.nn.Linear(150, output_units),
+            torch.nn.Linear(96, output_units),
             torch.nn.Softmax(dim=1)]
 
 
@@ -289,8 +294,8 @@ class GenreNeuralNetwork2D:
             return
 
         sound_stats = MP3toSoundStats(path)
-        sound_stats = sound_stats.reshape((1,14,10))
         sound_stats = np.repeat(sound_stats[..., np.newaxis], 3, -1)
+        sound_stats = sound_stats.reshape((1,3,14,10))
 
         res =  self._model(torch.Tensor(sound_stats))
         res = res.argmax(dim=1).cpu().detach().numpy()
