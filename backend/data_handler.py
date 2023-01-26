@@ -32,14 +32,11 @@ class DataHandler:
         test = dataset_target['set', 'split'] == 'test'
 
         # Create test and train datasets
-        self._genres_train = dataset_target.loc[small & train, ('track', 'genre_top')]
-        self._genres_test = dataset_target.loc[small & test, ('track', 'genre_top')]
-        #self._mfcc_train = dataset_feature.loc[small & train, ['mfcc','chroma_stft','spectral_centroid','rmse']]
-        #self._mfcc_test = dataset_feature.loc[small & test, ['mfcc','chroma_stft','spectral_centroid','rmse']]
+        self._genres_train = dataset_target.loc[train, ('track', 'genre_top')]
+        self._genres_test = dataset_target.loc[test, ('track', 'genre_top')]
 
-
-        self._mfcc_train = dataset_feature.loc[small & train, 'mfcc']
-        self._mfcc_test = dataset_feature.loc[small & test, 'mfcc']
+        self._mfcc_train = dataset_feature.loc[train, 'mfcc']
+        self._mfcc_test = dataset_feature.loc[test, 'mfcc']
 
         train_data = pd.concat([self._mfcc_train, self._genres_train], axis=1)
         test_data = pd.concat([self._mfcc_test, self._genres_test], axis=1)
