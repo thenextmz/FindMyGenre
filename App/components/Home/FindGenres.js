@@ -68,7 +68,7 @@ export default function FindGenres({ navigation, ...props }) {
               }}
             >
               <Text style={styles.answerText}>{backendAnswer[0]}</Text>
-              <Text style={styles.predictionAlgo}>GenreNeuralNetwork</Text>
+              <Text style={styles.predictionAlgo}>1D-NeuralNetwork</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -80,7 +80,7 @@ export default function FindGenres({ navigation, ...props }) {
               }}
             >
               <Text style={styles.answerText}>{backendAnswer[1]}</Text>
-              <Text style={styles.predictionAlgo}>GenreNeuralNetwork2D</Text>
+              <Text style={styles.predictionAlgo}>2D-NeuralNetwork</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -93,7 +93,7 @@ export default function FindGenres({ navigation, ...props }) {
             >
               <Text style={styles.answerText}>{backendAnswer[2]}</Text>
               <Text style={styles.predictionAlgo}>
-                GenreNeuralNetwork2DTransferLearned
+                2D-NeuralNetwork-Pretrained
               </Text>
             </TouchableOpacity>
           </View>
