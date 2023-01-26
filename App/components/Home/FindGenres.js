@@ -11,10 +11,12 @@ import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import * as FileSystem from "expo-file-system";
 import { uri } from "../../ip";
+import { Divider } from "@rneui/base";
 
 export default function FindGenres({ navigation, ...props }) {
   const [backendAnswer, setBackendAnswer] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [nnMethod, setnnMethod] = useState(0);
 
   async function getGenreFromPython() {
     try {
@@ -56,46 +58,97 @@ export default function FindGenres({ navigation, ...props }) {
       {backendAnswer && !loading && (
         <>
           <View style={styles.arrowView}>
-            <AntDesign name={"arrowdown"} size={23} color={"white"} />
+            {/*<AntDesign name={"arrowdown"} size={23} color={"white"} />*/}
+            <Divider
+              color={"white"}
+              width={1.2}
+              style={{ marginVertical: 10, marginHorizontal: 10 }}
+            />
+          </View>
+          <View style={styles.nnModeView}>
+            <TouchableOpacity
+              style={[
+                styles.modeButton,
+                nnMethod == 0 && { borderWidth: 1, borderColor: COLORS.theme },
+              ]}
+              activeOpacity={1}
+              onPress={() => {
+                setnnMethod(0);
+              }}
+            >
+              <Text style={styles.predictionAlgo}>NN1</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.modeButton,
+                nnMethod == 1 && { borderWidth: 1, borderColor: COLORS.theme },
+              ]}
+              activeOpacity={1}
+              onPress={() => {
+                setnnMethod(1);
+              }}
+            >
+              <Text style={styles.predictionAlgo}>NN2</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.modeButton,
+                nnMethod == 2 && { borderWidth: 1, borderColor: COLORS.theme },
+              ]}
+              activeOpacity={1}
+              onPress={() => {
+                setnnMethod(2);
+              }}
+            >
+              <Text style={styles.predictionAlgo}>NN3</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.multipleView}>
-            <TouchableOpacity
-              style={styles.answerView}
-              onPress={() => {
-                navigation.navigate("Songs", {
-                  genre: backendAnswer[0],
-                });
-              }}
-            >
-              <Text style={styles.answerText}>{backendAnswer[0]}</Text>
-              <Text style={styles.predictionAlgo}>1D-NeuralNetwork</Text>
-            </TouchableOpacity>
+            {nnMethod == 0 && (
+              <TouchableOpacity
+                style={styles.answerView}
+                onPress={() => {
+                  navigation.navigate("Songs", {
+                    genre: backendAnswer[0],
+                  });
+                }}
+              >
+                <Text style={styles.answerText}>{backendAnswer[0]}</Text>
+                <Text style={styles.predictionAlgo}>1D-NeuralNetwork</Text>
+              </TouchableOpacity>
+            )}
 
-            <TouchableOpacity
-              style={styles.answerView}
-              onPress={() => {
-                navigation.navigate("Songs", {
-                  genre: backendAnswer[1],
-                });
-              }}
-            >
-              <Text style={styles.answerText}>{backendAnswer[1]}</Text>
-              <Text style={styles.predictionAlgo}>2D-NeuralNetwork</Text>
-            </TouchableOpacity>
+            {nnMethod == 1 && (
+              <TouchableOpacity
+                style={styles.answerView}
+                onPress={() => {
+                  navigation.navigate("Songs", {
+                    genre: backendAnswer[1],
+                  });
+                }}
+              >
+                <Text style={styles.answerText}>{backendAnswer[1]}</Text>
+                <Text style={styles.predictionAlgo}>2D-NeuralNetwork</Text>
+              </TouchableOpacity>
+            )}
 
-            <TouchableOpacity
-              style={styles.answerView}
-              onPress={() => {
-                navigation.navigate("Songs", {
-                  genre: backendAnswer[2],
-                });
-              }}
-            >
-              <Text style={styles.answerText}>{backendAnswer[2]}</Text>
-              <Text style={styles.predictionAlgo}>
-                2D-NeuralNetwork-Pretrained
-              </Text>
-            </TouchableOpacity>
+            {nnMethod == 2 && (
+              <TouchableOpacity
+                style={styles.answerView}
+                onPress={() => {
+                  navigation.navigate("Songs", {
+                    genre: backendAnswer[2],
+                  });
+                }}
+              >
+                <Text style={styles.answerText}>{backendAnswer[2]}</Text>
+                <Text style={styles.predictionAlgo}>
+                  2D-NeuralNetwork-Pretrained
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </>
       )}
@@ -130,10 +183,8 @@ const styles = StyleSheet.create({
   },
 
   arrowView: {
-    alignItems: "center",
-    alignSelf: "center",
     paddingTop: 10,
-    paddingBottom: 10,
+    //paddingBottom: 10,
     borderRadius: 5,
   },
 
@@ -151,5 +202,19 @@ const styles = StyleSheet.create({
 
   multipleView: {
     //flexDirection: "row",
+  },
+
+  nnModeView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+
+  modeButton: {
+    backgroundColor: COLORS.dark2,
+    padding: 20,
+    borderRadius: 5,
   },
 });
