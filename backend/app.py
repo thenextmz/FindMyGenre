@@ -20,8 +20,8 @@ data_handler = DataHandler()
 data_handler.read('data/fma_metadata/')
 all_features_ids = data_handler.mfcc_all
 neural_network_2d_transfer_learning = GenreNeuralNetwork2DTransferLearned(data_handler, 10)
-#neural_network_2d = GenreNeuralNetwork2D(data_handler, 10)
-#neural_network = GenreNeuralNetwork(data_handler, 10)
+neural_network_2d = GenreNeuralNetwork2D(data_handler, 10)
+neural_network = GenreNeuralNetwork(data_handler, 10)
 
 data = pd.read_csv(os.getcwd() + "/data/fma_metadata/raw_tracks.csv")
 
@@ -83,19 +83,11 @@ def home():
 
 def main():
 
-    data = data_handler.mfcc_train.to_numpy()
-    sample = data[0]
-    print("Start")
-    sys.stdout.flush()
-    print(cosine_similarity(data, [sample]))
-    sys.stdout.flush()
-    print("End")
-    sys.stdout.flush()
+    neural_network_2d.fit()
 
-    #neural_network.searchModel()
     #neural_network_2d_transfer_learning.fit()
 
-
+    '''
     result = neural_network_2d_transfer_learning.predict(os.getcwd() + '/data/fma_small/000/000194.mp3')
     print(result)
     result = neural_network_2d_transfer_learning.predict(os.getcwd() + '/data/fma_small/000/000193.mp3')
@@ -120,6 +112,7 @@ def main():
     print(result)
     result = neural_network_2d_transfer_learning.predict(os.getcwd() + '/data/other_songs/Upbeat-Forever.mp3')
     print(result)
+    '''
 
 
 

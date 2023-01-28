@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn import preprocessing
 import sklearn as skl
+from sklearn.model_selection import train_test_split
 
 class DataHandler:
     def __init__(self):
@@ -34,24 +35,11 @@ class DataHandler:
         test = dataset_target['set', 'split'] == 'test'
 
         # Create test and train datasets
-        self._genres_train = dataset_target.loc[train, ('track', 'genre_top')]
-        self._genres_test = dataset_target.loc[test, ('track', 'genre_top')]
+        temp = pd.concat([dataset_feature['mfcc'], dataset_target[('track', 'genre_top')]], axis=1).dropna()
+        genres = temp.pop(('track', 'genre_top'))
+        mfccs = temp
 
-        self._mfcc_train = dataset_feature.loc[train, 'mfcc']
-        self._mfcc_test = dataset_feature.loc[test, 'mfcc']
-
-        train_data = pd.concat([self._mfcc_train, self._genres_train], axis=1)
-        test_data = pd.concat([self._mfcc_test, self._genres_test], axis=1)
-
-        # Drop lines with nan
-        train_data = train_data.dropna()
-        test_data = test_data.dropna()
-
-        self._mfcc_train = train_data
-        self._genres_train = self._mfcc_train.pop(('track', 'genre_top'))
-
-        self._mfcc_test = test_data
-        self._genres_test = self._mfcc_test.pop(('track', 'genre_top'))
+        self._mfcc_train, self._mfcc_test, self._genres_train, self._genres_test = train_test_split(mfccs, genres, train_size=0.8, random_state=4242, stratify=genres)
 
         # Replace unique names of genre to a unique number
         unique_targets = np.unique(self._genres_train.values)

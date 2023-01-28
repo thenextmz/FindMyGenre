@@ -166,7 +166,7 @@ class GenreNeuralNetwork:
         plt.savefig('graphics.pdf')
 
         self._model = model
-        torch.save(self._model, 'model_weighted')
+        torch.save(self._model, 'model')
 
     def predict(self, path):
         if self._model is None:
@@ -181,21 +181,18 @@ class GenreNeuralNetwork:
         res = res.argmax(dim=1).cpu().detach().numpy()
         return res
 
-
 class GenreNeuralNetwork2D:
     def __init__(self, data, epochs = 10):
         self._data = data
         train_mfcc = self._data.mfcc_train.to_numpy()
-        train_mfcc = np.repeat(train_mfcc[..., np.newaxis], 3, -1)
-        train_mfcc = train_mfcc.reshape((train_mfcc.shape[0], 3, 14, 10))
+        train_mfcc = train_mfcc.reshape((train_mfcc.shape[0], 1, 14, 10))
         train_genre = self._data.genres_train.to_numpy()
         dataset = ScikitFeatDataset(train_mfcc, train_genre)
 
         self._train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=64)
 
         test_mfcc = self._data.mfcc_test.to_numpy()
-        test_mfcc = np.repeat(test_mfcc[..., np.newaxis], 3, -1)
-        test_mfcc = test_mfcc.reshape((test_mfcc.shape[0], 3, 14, 10))
+        test_mfcc = test_mfcc.reshape((test_mfcc.shape[0], 1, 14, 10))
         dataset = ScikitFeatDataset(test_mfcc, self._data.genres_test.to_numpy())
 
         self._val_dataloader = torch.utils.data.DataLoader(dataset, batch_size=64)
@@ -242,11 +239,13 @@ class GenreNeuralNetwork2D:
         output_units = len(np.unique(self._data.genres_train))
 
         layer = [
-            torch.nn.Conv2d(3, 32, kernel_size=3),
-            #torch.nn.Conv2d(32, 16, kernel_size=3),
+            torch.nn.Conv2d(1, 64, kernel_size=3),
+            torch.nn.Conv2d(64, 32, kernel_size=3),
+            torch.nn.MaxPool2d(kernel_size=3),
+            torch.nn.Conv2d(32, 16, kernel_size=3),
             torch.nn.MaxPool2d(kernel_size=3),
             torch.nn.Flatten(),
-            torch.nn.Linear(96, output_units),
+            torch.nn.Linear(32, output_units),
             torch.nn.Softmax(dim=1)]
 
 
@@ -279,7 +278,7 @@ class GenreNeuralNetwork2D:
 
         conf_matrix = sklearn.metrics.confusion_matrix(y_real, outputs)
 
-        sns.heatmap(conf_matrix, ax=ax[2])
+        sns.heatmap(conf_matrix, ax=ax[2], norm=LogNorm())
         ax[2].set_xlabel('true value')
         ax[2].set_ylabel('predicted value')
         plt.show()
@@ -386,9 +385,9 @@ class GenreNeuralNetwork2DTransferLearned:
         model.fit(self._train_mfcc, self._train_genre, batch_size=64, epochs=self._epochs, validation_split=0.1)
         prediction = model.predict(self._test_mfcc, batch_size=128)
         prediction = np.squeeze(prediction)
-        prediction = prediction.argmax()
+        prediction = prediction.argmax(axis=1)
 
-        '''plt.rcParams.update({'font.size': 18})
+        plt.rcParams.update({'font.size': 18})
         fig, ax = plt.subplots(1,1, figsize=(10,18))
 
         conf_matrix = sklearn.metrics.confusion_matrix(self._test_genre, prediction)
@@ -397,7 +396,7 @@ class GenreNeuralNetwork2DTransferLearned:
         ax.set_xlabel('true value')
         ax.set_ylabel('predicted value')
         plt.show()
-        plt.savefig('graphics.pdf')'''
+        plt.savefig('graphics.pdf')
 
         self._model = model
         self._model.save('model_conv2d_transfer_learning')
