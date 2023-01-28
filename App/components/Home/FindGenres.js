@@ -26,10 +26,8 @@ export default function FindGenres({ navigation, ...props }) {
         props.recording.file
       );
       // console.log(JSON.parse(response.body));
-      new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
-        setBackendAnswer(JSON.parse(response.body));
-        setLoading(false);
-      });
+      setBackendAnswer(JSON.parse(response.body));
+      setLoading(false);
     } catch (err) {
       console.error(err);
     }
