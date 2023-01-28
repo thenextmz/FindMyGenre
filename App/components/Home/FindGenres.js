@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   FlatList,
+  Linking,
 } from "react-native";
 import React, { useState } from "react";
 import { COLORS } from "../../colors";
@@ -21,7 +22,7 @@ export default function FindGenres({ navigation, ...props }) {
 
   async function getGenreFromPython() {
     try {
-      console.log(props.recording.file);
+      //console.log(props.recording.file);
       const response = await FileSystem.uploadAsync(
         uri + "/uploadAudio",
         props.recording.file
@@ -32,18 +33,22 @@ export default function FindGenres({ navigation, ...props }) {
     } catch (err) {
       console.error(err);
     } finally {
-      console.log(backendAnswer);
+      //console.log(backendAnswer);
     }
   }
 
   const renderItem = ({ item, index }) => {
     return (
-      <View
+      <TouchableOpacity
         style={[
           styles.songButton,
           index % 2 === 0 ? { marginRight: 2.5 } : { marginLeft: 2.5 },
           item == props.song && { borderColor: COLORS.theme, borderWidth: 1 },
         ]}
+        onPress={() => {
+          Linking.openURL(item.url);
+        }}
+        activeOpacity={1}
       >
         <Text numberOfLines={1} style={styles.name}>
           {item.artist}
@@ -51,7 +56,7 @@ export default function FindGenres({ navigation, ...props }) {
         <Text numberOfLines={1} style={styles.name}>
           {item.song}
         </Text>
-      </View>
+      </TouchableOpacity>
     );
   };
 

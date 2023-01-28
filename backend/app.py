@@ -7,6 +7,7 @@ import pandas as pd
 from flask import jsonify
 from pydub import AudioSegment
 import io
+import math
 
 Genres = ['Blues','Classical','Country','Easy Listening','Electronic','Experimental','Folk','Hip-Hop','Instrumental','International','Jazz','Old-Time / Historic','Pop','Rock','Soul-RnB','Spoken']
 
@@ -30,9 +31,14 @@ def getSongsByGenre():
             dict = json.loads(genres.replace("'", "\""))
             for genre in dict:
                 if genre["genre_title"] == target_genre:
-                    songList.append({"artist": data["artist_name"][i], "song": data["track_title"][i]})
-        except:
+                    url = -1
+                    if str(data["track_url"][i]) != None and str(data["track_url"][i]) != "" and str(data["track_url"][i]) != "nan":
+                        url = data["track_url"][i]    
+                    songList.append({"artist": data["artist_name"][i], "song": data["track_title"][i], "url": url})
+        except Exception as e: 
             pass
+            # print(e)
+            
     return jsonify(songList)
 
 @app.route('/uploadAudio', methods=['POST'])
@@ -46,15 +52,15 @@ def uploadAudio():
     # prediction_2d_transfer_learning = neural_network_2d_transfer_learning.predict('tmpAudioRecording.mp3')
 
     # Mockup
-    simSongs = [{"artist": "X", "song": "XSong"}, 
-                {"artist": "Y", "song": "YSong"}, 
-                {"artist": "Z", "song": "ZSong"},
-                {"artist": "X", "song": "XSong"}, 
-                {"artist": "Y", "song": "YSong"}, 
-                {"artist": "Z", "song": "ZSong"},
-                {"artist": "X", "song": "XSong"}, 
-                {"artist": "Y", "song": "YSong"}, 
-                {"artist": "Z", "song": "ZSong"}]
+    simSongs = [{"artist": "X", "song": "XSong", "url": "https://reactnative.dev/docs/linking"}, 
+                {"artist": "Y", "song": "YSong", "url": "https://reactnative.dev/docs/linking"}, 
+                {"artist": "Z", "song": "ZSong", "url": "https://reactnative.dev/docs/linking"}, 
+                {"artist": "X", "song": "XSong", "url": "https://reactnative.dev/docs/linking"}, 
+                {"artist": "Y", "song": "YSong", "url": "https://reactnative.dev/docs/linking"}, 
+                {"artist": "Z", "song": "ZSong", "url": "https://reactnative.dev/docs/linking"}, 
+                {"artist": "X", "song": "XSong", "url": "https://reactnative.dev/docs/linking"}, 
+                {"artist": "Y", "song": "YSong", "url": "https://reactnative.dev/docs/linking"}, 
+                {"artist": "Z", "song": "ZSong", "url": "https://reactnative.dev/docs/linking"},]
 
 
 

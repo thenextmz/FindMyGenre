@@ -33,7 +33,7 @@ export default function SongList({ navigation, ...props }) {
       })
       .catch((error) => {
         console.error(error);
-      });    
+      });
   };
 
   const renderItem = ({ item, index }) => {
@@ -52,7 +52,9 @@ export default function SongList({ navigation, ...props }) {
           item == props.song && { borderColor: COLORS.theme, borderWidth: 1 },
         ]}
       >
-        <Text numberOfLines={1} style={styles.name}>{item.song}</Text>
+        <Text numberOfLines={1} style={styles.name}>
+          {item.song}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     //paddingHorizontal: 10,
     //marginRight: 0,
-    marginHorizontal: 5
+    marginHorizontal: 5,
   },
 
   name: {
