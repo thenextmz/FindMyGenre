@@ -42,7 +42,6 @@ def getSongsByGenre():
                     songList.append({"artist": data["artist_name"][i], "song": data["track_title"][i], "url": url})
         except Exception as e:
             pass
-            # print(e)
 
     return jsonify(songList)
 
@@ -69,10 +68,10 @@ def uploadAudio():
     song = AudioSegment.from_file(io.BytesIO(bytesOfSong), 'm4a')
     song.export('tmpAudioRecording.mp3', format="mp3")
 
-    #prediction = neural_network.predict('tmpAudioRecording.mp3')
-    #prediction_2d = neural_network_2d.predict('tmpAudioRecording.mp3')
-    #prediction_2d_transfer_learning = neural_network_2d_transfer_learning.predict('tmpAudioRecording.mp3')
-    return 0#Genres[prediction_2d]#Genres[prediction], Genres[prediction_2d], Genres[prediction_2d_transfer_learning]
+    prediction = neural_network.predict('tmpAudioRecording.mp3')
+    prediction_2d = neural_network_2d.predict('tmpAudioRecording.mp3')
+    prediction_2d_transfer_learning = neural_network_2d_transfer_learning.predict('tmpAudioRecording.mp3')
+    return Genres[prediction], Genres[prediction_2d], Genres[prediction_2d_transfer_learning]
 
 
 
@@ -82,10 +81,6 @@ def home():
     return 'Hello World!'
 
 def main():
-
-    neural_network_2d.fit()
-
-    #neural_network_2d_transfer_learning.fit()
 
     '''
     result = neural_network_2d_transfer_learning.predict(os.getcwd() + '/data/fma_small/000/000194.mp3')
