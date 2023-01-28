@@ -38,14 +38,7 @@ export default function FindGenres({ navigation, ...props }) {
 
   const renderItem = ({ item, index }) => {
     return (
-      <TouchableOpacity
-        onPress={() => {
-          if (item == props.song) {
-            props.setSong(null);
-          } else {
-            props.setSong(item);
-          }
-        }}
+      <View
         style={[
           styles.songButton,
           index % 2 === 0 ? { marginRight: 2.5 } : { marginLeft: 2.5 },
@@ -53,9 +46,12 @@ export default function FindGenres({ navigation, ...props }) {
         ]}
       >
         <Text numberOfLines={1} style={styles.name}>
+          {item.artist}
+        </Text>
+        <Text numberOfLines={1} style={styles.name}>
           {item.song}
         </Text>
-      </TouchableOpacity>
+      </View>
     );
   };
 
