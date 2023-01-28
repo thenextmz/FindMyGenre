@@ -206,7 +206,6 @@ class GenreNeuralNetwork2D:
             optimiser.zero_grad()
             X = X.to(DEVICE, dtype=torch.float)
             y = y.to(DEVICE, dtype=torch.long)
-
             output = model(X)
             loss = loss_function(output, y)
             loss.backward()
@@ -241,7 +240,6 @@ class GenreNeuralNetwork2D:
         layer = [
             torch.nn.Conv2d(1, 64, kernel_size=3),
             torch.nn.Conv2d(64, 32, kernel_size=3),
-            torch.nn.MaxPool2d(kernel_size=3),
             torch.nn.Conv2d(32, 16, kernel_size=3),
             torch.nn.MaxPool2d(kernel_size=3),
             torch.nn.Flatten(),
@@ -293,8 +291,7 @@ class GenreNeuralNetwork2D:
             return
 
         sound_stats = MP3toSoundStats(path)
-        sound_stats = np.repeat(sound_stats[..., np.newaxis], 3, -1)
-        sound_stats = sound_stats.reshape((1,3,14,10))
+        sound_stats = sound_stats.reshape((1,1,14,10))
 
         res =  self._model(torch.Tensor(sound_stats))
         res = res.argmax(dim=1).cpu().detach().numpy()
