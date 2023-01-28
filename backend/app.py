@@ -44,7 +44,21 @@ def uploadAudio():
     prediction = neural_network.predict('tmpAudioRecording.mp3')
     prediction_2d = neural_network_2d.predict('tmpAudioRecording.mp3')
     # prediction_2d_transfer_learning = neural_network_2d_transfer_learning.predict('tmpAudioRecording.mp3')
-    return [Genres[prediction[0]], Genres[prediction_2d[0]], Genres[prediction_2d[0]]]
+
+    # Mockup
+    simSongs = [{"artist": "X", "song": "XSong"}, 
+                {"artist": "Y", "song": "YSong"}, 
+                {"artist": "Z", "song": "ZSong"},
+                {"artist": "X", "song": "XSong"}, 
+                {"artist": "Y", "song": "YSong"}, 
+                {"artist": "Z", "song": "ZSong"},
+                {"artist": "X", "song": "XSong"}, 
+                {"artist": "Y", "song": "YSong"}, 
+                {"artist": "Z", "song": "ZSong"}]
+
+
+
+    return [Genres[prediction[0]], Genres[prediction_2d[0]], Genres[prediction_2d[0]], simSongs]
 
 
 
