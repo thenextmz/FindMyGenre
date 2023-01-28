@@ -135,7 +135,7 @@ class GenreNeuralNetwork:
         optimiser = torch.optim.Adam(model.parameters(), lr=0.0003)
 
         validation_loss = 0
-        print("Start")
+        print("Start fitting")
         accuracies = []
         losses = []
         outputs = []
@@ -243,7 +243,7 @@ class GenreNeuralNetwork2D:
 
         layer = [
             torch.nn.Conv2d(3, 32, kernel_size=3),
-            torch.nn.Conv2d(32, 16, kernel_size=3),
+            #torch.nn.Conv2d(32, 16, kernel_size=3),
             torch.nn.MaxPool2d(kernel_size=3),
             torch.nn.Flatten(),
             torch.nn.Linear(96, output_units),
@@ -255,7 +255,7 @@ class GenreNeuralNetwork2D:
         optimiser = torch.optim.Adam(model.parameters(), lr=0.0003)
 
         validation_loss = 0
-        print("Start")
+        print("Start fitting")
         accuracies = []
         losses = []
         outputs = []
@@ -309,9 +309,9 @@ class GenreNeuralNetwork2DTransferLearned:
         self._train_mfcc = np.hstack((self._train_mfcc, self._train_mfcc))
         self._train_mfcc = np.hstack((self._train_mfcc, self._train_mfcc))
         self._train_mfcc = np.hstack((self._train_mfcc, self._train_mfcc))
-
         self._train_mfcc = self._train_mfcc.reshape((self._train_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH))
         self._train_mfcc = np.repeat(self._train_mfcc[..., np.newaxis], 3, -1)
+        self._train_mfcc = tf.keras.applications.densenet.preprocess_input(self._train_mfcc)
         self._train_genre = self._data.genres_train.to_numpy()
         self._train_genre = tf.keras.utils.to_categorical(self._train_genre, dtype="uint8")
 
@@ -321,14 +321,14 @@ class GenreNeuralNetwork2DTransferLearned:
         self._test_mfcc = np.hstack((self._test_mfcc, self._test_mfcc))
         self._test_mfcc = self._test_mfcc.reshape((self._test_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH))
         self._test_mfcc = np.repeat(self._test_mfcc[..., np.newaxis], 3, -1)
+        self._test_mfcc = tf.keras.applications.densenet.preprocess_input(self._test_mfcc)
+
         self._test_genre = self._data.genres_test.to_numpy()
         self._test_genre = tf.keras.utils.to_categorical(self._test_genre, dtype="uint8")
 
-        self._model = tf.keras.models.load_model('model_conv2d_transfer_learning')
+        self._model = 0#tf.keras.models.load_model('model_conv2d_transfer_learning')
         self._epochs = epochs
 
-    #def __init__(self):
-    #    self._model = torch.load('model')
     def _train_func(self, model, train_dataloader, loss_function, optimiser):
         model.train()
         running_loss = 0
@@ -360,8 +360,6 @@ class GenreNeuralNetwork2DTransferLearned:
             print(accuracy)
         return validation_loss, accuracy, outputs, y_real
     def fit(self):
-        input_units = self._data.mfcc_train.shape[1]
-        print(input_units)
         output_units = len(np.unique(self._data.genres_train))
 
         base = tf.keras.applications.DenseNet201(
@@ -373,6 +371,7 @@ class GenreNeuralNetwork2DTransferLearned:
             classes=1000,
             classifier_activation="softmax"
         )
+
         inputs = base.inputs
         model = base.output
         model = tf.keras.layers.GlobalAveragePooling2D()(model)
@@ -382,15 +381,14 @@ class GenreNeuralNetwork2DTransferLearned:
         model = tf.keras.Model(inputs=inputs, outputs=model)
         model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0003), loss=tf.keras.losses.CategoricalCrossentropy(), metrics=['acc'])
 
-        print("Start")
-
+        print("Start fitting")
 
         model.fit(self._train_mfcc, self._train_genre, batch_size=64, epochs=self._epochs, validation_split=0.1)
         prediction = model.predict(self._test_mfcc, batch_size=128)
         prediction = np.squeeze(prediction)
         prediction = prediction.argmax()
 
-        plt.rcParams.update({'font.size': 18})
+        '''plt.rcParams.update({'font.size': 18})
         fig, ax = plt.subplots(1,1, figsize=(10,18))
 
         conf_matrix = sklearn.metrics.confusion_matrix(self._test_genre, prediction)
@@ -399,7 +397,7 @@ class GenreNeuralNetwork2DTransferLearned:
         ax.set_xlabel('true value')
         ax.set_ylabel('predicted value')
         plt.show()
-        plt.savefig('graphics.pdf')
+        plt.savefig('graphics.pdf')'''
 
         self._model = model
         self._model.save('model_conv2d_transfer_learning')

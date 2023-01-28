@@ -17,6 +17,8 @@ class DataHandler:
         self._different_genres_names = []
         self._different_genres = []
 
+        self._mfcc_all = pd.DataFrame()
+
     def read(self, path):
         try:
             dataset_target = pd.read_csv(path+'tracks.csv', index_col=0, header=[0,1], low_memory=False)
@@ -69,12 +71,11 @@ class DataHandler:
         scaler.fit_transform(self._mfcc_train)
         scaler.transform(self._mfcc_test)
 
-        '''print("Fit data")
-        clf = skl.svm.SVC()
-        clf.fit(self._mfcc_train, self._genres_train)
-        print("Evaluate")
-        score = clf.score(self._mfcc_test, self._genres_test)
-        print('Accuracy: {:.2%}'.format(score))'''
+        self._mfcc_all = dataset_feature.mfcc
+
+    @property
+    def mfcc_all(self):
+        return self._mfcc_all
 
     @property
     def genres_train(self):
