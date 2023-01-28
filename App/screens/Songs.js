@@ -1,9 +1,16 @@
-import { StyleSheet, Text, View } from "react-native";
+import {
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import { COLORS } from "../colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GenreHeader from "../components/Songs/GenreHeader";
 import SongList from "../components/Songs/SongList";
+import AntDesign from "react-native-vector-icons/AntDesign";
 
 export default function Songs({ navigation, route }) {
   const { genre } = route.params;
@@ -19,6 +26,21 @@ export default function Songs({ navigation, route }) {
         <View style={styles.container2}>
           <Text style={styles.artist}>Artist: {song.artist}</Text>
         </View>
+
+        {song.url !== -1 && (
+          <TouchableOpacity
+            style={styles.container2}
+            onPress={() => {
+              Linking.openURL(song.url);
+            }}
+            activeOpacity={1}
+          >
+            <View style={{ marginRight: 10 }}>
+              <AntDesign name={"link"} size={20} color={"white"} />
+            </View>
+            <Text style={styles.artist}>Song Url</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
@@ -55,7 +77,6 @@ const styles = StyleSheet.create({
 
   container2: {
     flexDirection: "row",
-    alignItems: "center",
   },
 
   name: {

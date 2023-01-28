@@ -5,8 +5,10 @@ from data_handler import DataHandler
 import os
 import json
 import pandas as pd
+from flask import jsonify
 from pydub import AudioSegment
 import io
+import math
 from sklearn.metrics.pairwise import cosine_similarity
 from mp3_to_mfcc_converter import MP3toSoundStats
 import numpy as np
@@ -29,15 +31,19 @@ def getSongsByGenre():
     args = request.args
     target_genre = args.get("genre")
     songList = []
-
     for i, genres in enumerate(data["track_genres"]):
         try:
             dict = json.loads(genres.replace("'", "\""))
             for genre in dict:
                 if genre["genre_title"] == target_genre:
-                    songList.append({"artist": data["artist_name"][i], "song": data["track_title"][i]})
-        except:
+                    url = -1
+                    if str(data["track_url"][i]) != None and str(data["track_url"][i]) != "" and str(data["track_url"][i]) != "nan":
+                        url = data["track_url"][i]
+                    songList.append({"artist": data["artist_name"][i], "song": data["track_title"][i], "url": url})
+        except Exception as e:
             pass
+            # print(e)
+
     return jsonify(songList)
 
 @app.route('/getSongsByGenreAndSong', methods=['GET'])
