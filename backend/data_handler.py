@@ -19,6 +19,7 @@ class DataHandler:
         self._different_genres = []
 
         self._mfcc_all = pd.DataFrame()
+        self._genre_all = pd.DataFrame()
 
     def read(self, path):
         try:
@@ -60,10 +61,15 @@ class DataHandler:
         scaler.transform(self._mfcc_test)
 
         self._mfcc_all = dataset_feature.mfcc
+        self._genre_all = dataset_target[('track', 'genre_top')]
 
     @property
     def mfcc_all(self):
         return self._mfcc_all
+
+    @property
+    def genre_all(self):
+        return self._genre_all
 
     @property
     def genres_train(self):

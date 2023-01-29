@@ -179,7 +179,7 @@ class GenreNeuralNetwork:
         res =  self._model(torch.Tensor(sound_stats))
         print(res)
         res = res.argmax(dim=1).cpu().detach().numpy()
-        return res
+        return res[0]
 
 class GenreNeuralNetwork2D:
     def __init__(self, data, epochs = 10):
@@ -295,7 +295,7 @@ class GenreNeuralNetwork2D:
 
         res =  self._model(torch.Tensor(sound_stats))
         res = res.argmax(dim=1).cpu().detach().numpy()
-        return res
+        return res[0]
 
 
 class GenreNeuralNetwork2DTransferLearned:
@@ -305,9 +305,10 @@ class GenreNeuralNetwork2DTransferLearned:
         self._train_mfcc = np.hstack((self._train_mfcc, self._train_mfcc))
         self._train_mfcc = np.hstack((self._train_mfcc, self._train_mfcc))
         self._train_mfcc = np.hstack((self._train_mfcc, self._train_mfcc))
-        self._train_mfcc = self._train_mfcc.reshape((self._train_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH))
         self._train_mfcc = np.repeat(self._train_mfcc[..., np.newaxis], 3, -1)
+        self._train_mfcc = self._train_mfcc.reshape((self._train_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH, 3))
         self._train_mfcc = tf.keras.applications.densenet.preprocess_input(self._train_mfcc)
+
         self._train_genre = self._data.genres_train.to_numpy()
         self._train_genre = tf.keras.utils.to_categorical(self._train_genre, dtype="uint8")
 
@@ -315,14 +316,14 @@ class GenreNeuralNetwork2DTransferLearned:
         self._test_mfcc = np.hstack((self._test_mfcc, self._test_mfcc))
         self._test_mfcc = np.hstack((self._test_mfcc, self._test_mfcc))
         self._test_mfcc = np.hstack((self._test_mfcc, self._test_mfcc))
-        self._test_mfcc = self._test_mfcc.reshape((self._test_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH))
         self._test_mfcc = np.repeat(self._test_mfcc[..., np.newaxis], 3, -1)
+        self._test_mfcc = self._test_mfcc.reshape((self._test_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH, 3))
         self._test_mfcc = tf.keras.applications.densenet.preprocess_input(self._test_mfcc)
 
         self._test_genre = self._data.genres_test.to_numpy()
         self._test_genre = tf.keras.utils.to_categorical(self._test_genre, dtype="uint8")
 
-        self._model = 0#tf.keras.models.load_model('model_conv2d_transfer_learning')
+        self._model = tf.keras.models.load_model('efficientnetv2l')
         self._epochs = epochs
 
     def _train_func(self, model, train_dataloader, loss_function, optimiser):
@@ -404,10 +405,13 @@ class GenreNeuralNetwork2DTransferLearned:
             return
 
         sound_stats = MP3toSoundStats(path)
-        sound_stats = sound_stats.reshape((1,14,10))
+        sound_stats = np.hstack((sound_stats, sound_stats))
+        sound_stats = np.hstack((sound_stats, sound_stats))
+        sound_stats = np.hstack((sound_stats, sound_stats))
         sound_stats = np.repeat(sound_stats[..., np.newaxis], 3, -1)
+        sound_stats = sound_stats.reshape((1, TRANSFER_HEIGHT, TRANSFER_WIDTH, 3))
 
-        res =  self._model(torch.Tensor(sound_stats))
-        res = res.argmax()
+        res =  self._model(sound_stats)
+        res = np.argmax(res)
         return res
 
