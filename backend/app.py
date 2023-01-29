@@ -89,6 +89,12 @@ def home():
     return 'Hello World!'
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "-t":
+        print("Start Training...")
+        neural_network.fit()
+        neural_network_2d.fit()
+        neural_network_2d_transfer_learning.fit()
+        print("Training Done.")
 
     app.run(host="0.0.0.0", port=12345)
 
