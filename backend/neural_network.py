@@ -21,6 +21,26 @@ TRANSFER_WIDTH = 32
 # 'Old-Time / Historic' 'Pop' 'Rock' 'Soul-RnB' 'Spoken']
 #Genre numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
+'''
+0: Blues
+1: Classical
+2: Country
+3: Easy Listening
+4: Electronic
+5: Experimental
+6: Folk
+7: Hip-Hop
+8: Instrumental
+9: International
+10: Jazz
+11: Old-Time / Historic
+12: Pop
+13: Rock
+14: Soul-RnB
+15: Spoken
+'''
+
+
 class ScikitFeatDataset(torch.utils.data.Dataset):
     def __init__(self, X: np.array, y: np.array):
         self.X = X.astype(float)
@@ -35,25 +55,32 @@ class GenreNeuralNetwork:
         self._data = data
         train_mfcc = self._data.mfcc_train.to_numpy()
         train_genre = self._data.genres_train.to_numpy()
-        dataset = ScikitFeatDataset(train_mfcc, train_genre)
 
+        dataset = ScikitFeatDataset(train_mfcc, train_genre)
         self._train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=64)
+
         test_mfcc = self._data.mfcc_test.to_numpy()
-        dataset = ScikitFeatDataset(test_mfcc, self._data.genres_test.to_numpy())
+        test_genres = self._data.genres_test.to_numpy()
+
+        dataset = ScikitFeatDataset(test_mfcc, test_genres)
         self._val_dataloader = torch.utils.data.DataLoader(dataset)
-        self._model = torch.load('model')
+        
+        self._model = 0
+        try:
+            self._model = torch.load('model_new')
+        except:
+            pass
+
         self._epochs = epochs
 
         print('GenreNeuralNetwork created')
 
-
-    #def __init__(self):
-    #    self._model = torch.load('model')
     def _train_func(self, model, train_dataloader, loss_function, optimiser):
         model.train()
         running_loss = 0
         for X, y in train_dataloader:
             optimiser.zero_grad()
+
             X = X.to(DEVICE, dtype=torch.float)
             y = y.to(DEVICE, dtype=torch.long)
 
@@ -78,13 +105,13 @@ class GenreNeuralNetwork:
                 y_real += [y.cpu().detach().numpy()]
             validation_loss = running_loss / len(val_dataloader)
             accuracy = sklearn.metrics.accuracy_score(y_real, outputs)
-            print(accuracy)
+            
         return validation_loss, accuracy, outputs, y_real
     def _define_model(self, trial):
         layers = []
         activation_function_selection = {"ReLU": torch.nn.ReLU(),
-                                         #"Softmax": torch.nn.Softmax(dim=1),
-                                         #"Sigmoid": torch.nn.Sigmoid(),
+                                         "Softmax": torch.nn.Softmax(dim=1),
+                                         "Sigmoid": torch.nn.Sigmoid(),
                                          "None": None}
         input_units = self._data.mfcc_train.to_numpy().shape[1]
         n_layers = trial.suggest_int("n_layers", 0, 12)
@@ -123,14 +150,18 @@ class GenreNeuralNetwork:
         print(study.best_params)
 
     def fit(self):
-        input_units = self._data.mfcc_train.shape[1]
-        print(input_units)
+        input_units = self._data.mfcc_train.to_numpy().shape[1]
+      
         output_units = len(np.unique(self._data.genres_train))
 
-        layer = [torch.nn.Linear(input_units, 150),
-            torch.nn.ReLU(),
-            torch.nn.Linear(150, output_units),
-            torch.nn.Softmax(dim=1)]
+        layer = [torch.nn.Linear(input_units, 300),
+            torch.nn.ELU(),
+            torch.nn.Linear(300, 150),
+            torch.nn.ELU(),
+            torch.nn.Linear(150, 80),
+            torch.nn.ELU(),
+            torch.nn.Linear(80, output_units),
+            torch.nn.Sigmoid()]
 
         model = torch.nn.Sequential(*layer).to(DEVICE)
         loss_function = torch.nn.CrossEntropyLoss()
@@ -168,7 +199,7 @@ class GenreNeuralNetwork:
         plt.savefig('graphics.pdf')
 
         self._model = model
-        torch.save(self._model, 'model')
+        torch.save(self._model, 'model_new')
 
     def predict(self, path):
         if self._model is None:
@@ -177,9 +208,7 @@ class GenreNeuralNetwork:
 
         sound_stats = MP3toSoundStats(path)
         sound_stats = sound_stats.reshape((1,-1))
-        print(sound_stats.shape)
         res =  self._model(torch.Tensor(sound_stats))
-        print(res)
         res = res.argmax(dim=1).cpu().detach().numpy()
         return res[0]
 
@@ -198,7 +227,12 @@ class GenreNeuralNetwork2D:
         dataset = ScikitFeatDataset(test_mfcc, self._data.genres_test.to_numpy())
 
         self._val_dataloader = torch.utils.data.DataLoader(dataset, batch_size=64)
-        self._model = torch.load('model_conv2d')
+        
+        self._model = 0
+        try:
+            self._model = torch.load('model_conv2d')
+        except:
+            pass
         self._epochs = epochs
 
         print('GenreNeuralNetwork2D created')
@@ -326,7 +360,11 @@ class GenreNeuralNetwork2DTransferLearned:
         self._test_genre = self._data.genres_test.to_numpy()
         #self._test_genre = tf.keras.utils.to_categorical(self._test_genre, dtype="uint8")
 
-        self._model = tf.keras.models.load_model('efficientnetv2l')
+        self._model = 0
+        try:
+            self._model = tf.keras.models.load_model('efficientnetv2l')
+        except:
+            pass
         self._epochs = epochs
 
         print('GenreNeuralNetwork2DTransferLearned created')

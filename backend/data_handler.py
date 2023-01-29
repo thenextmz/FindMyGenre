@@ -29,11 +29,7 @@ class DataHandler:
             print('Could not find file')
             return -1
 
-        # Create indexes for different dataframes
-        small = dataset_target['set', 'subset'] <= 'small'
-        train = dataset_target['set', 'split'] == 'training'
-        val = dataset_target['set', 'split'] == 'validation'
-        test = dataset_target['set', 'split'] == 'test'
+
 
         # Create test and train datasets
         temp = pd.concat([dataset_feature['mfcc'], dataset_target[('track', 'genre_top')]], axis=1).dropna()
@@ -54,12 +50,26 @@ class DataHandler:
         self._genres_train = self._genres_train.replace(self._target_mapping.keys(), self._target_mapping.values())
         self._genres_test = self._genres_test.replace(self._target_mapping.keys(), self._target_mapping.values())
 
+        resampled = pd.DataFrame()
+        all = self._mfcc_train
+        all[('track', 'genre_top')] = self._genres_train
+        for i in range(len(unique_targets)):
+            temp = all[all[('track', 'genre_top')] == i]
+            resamp = skl.utils.resample(temp, replace=True, n_samples=3000, random_state=123)
+            if resampled.empty:
+                resampled = resamp
+            else:
+                resampled = pd.concat([resampled, resamp])
+
+        self._genres_train = resampled.pop(('track', 'genre_top'))
+        self._mfcc_train = resampled
+
         # Shuffle data
         self._mfcc_train, self._genres_train = skl.utils.shuffle(self._mfcc_train, self._genres_train, random_state=9876)
 
-        scaler = skl.preprocessing.StandardScaler(copy=False)
-        scaler.fit_transform(self._mfcc_train)
-        scaler.transform(self._mfcc_test)
+        #scaler = skl.preprocessing.StandardScaler(copy=False)
+        #scaler.fit_transform(self._mfcc_train)
+        #scaler.transform(self._mfcc_test)
 
         self._mfcc_all = mfccs
         self._genre_all = genres
