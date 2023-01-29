@@ -44,6 +44,8 @@ class GenreNeuralNetwork:
         self._model = torch.load('model')
         self._epochs = epochs
 
+        print('GenreNeuralNetwork created')
+
 
     #def __init__(self):
     #    self._model = torch.load('model')
@@ -199,6 +201,8 @@ class GenreNeuralNetwork2D:
         self._model = torch.load('model_conv2d')
         self._epochs = epochs
 
+        print('GenreNeuralNetwork2D created')
+
     def _train_func(self, model, train_dataloader, loss_function, optimiser):
         model.train()
         running_loss = 0
@@ -297,7 +301,6 @@ class GenreNeuralNetwork2D:
         res = res.argmax(dim=1).cpu().detach().numpy()
         return res[0]
 
-
 class GenreNeuralNetwork2DTransferLearned:
     def __init__(self, data, epochs = 10):
         self._data = data
@@ -307,7 +310,7 @@ class GenreNeuralNetwork2DTransferLearned:
         self._train_mfcc = np.hstack((self._train_mfcc, self._train_mfcc))
         self._train_mfcc = np.repeat(self._train_mfcc[..., np.newaxis], 3, -1)
         self._train_mfcc = self._train_mfcc.reshape((self._train_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH, 3))
-        self._train_mfcc = tf.keras.applications.densenet.preprocess_input(self._train_mfcc)
+        #self._train_mfcc = tf.keras.applications.densenet.preprocess_input(self._train_mfcc)
 
         self._train_genre = self._data.genres_train.to_numpy()
         self._train_genre = tf.keras.utils.to_categorical(self._train_genre, dtype="uint8")
@@ -318,13 +321,15 @@ class GenreNeuralNetwork2DTransferLearned:
         self._test_mfcc = np.hstack((self._test_mfcc, self._test_mfcc))
         self._test_mfcc = np.repeat(self._test_mfcc[..., np.newaxis], 3, -1)
         self._test_mfcc = self._test_mfcc.reshape((self._test_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH, 3))
-        self._test_mfcc = tf.keras.applications.densenet.preprocess_input(self._test_mfcc)
+        #self._test_mfcc = tf.keras.applications.densenet.preprocess_input(self._test_mfcc)
 
         self._test_genre = self._data.genres_test.to_numpy()
-        self._test_genre = tf.keras.utils.to_categorical(self._test_genre, dtype="uint8")
+        #self._test_genre = tf.keras.utils.to_categorical(self._test_genre, dtype="uint8")
 
         self._model = tf.keras.models.load_model('efficientnetv2l')
         self._epochs = epochs
+
+        print('GenreNeuralNetwork2DTransferLearned created')
 
     def _train_func(self, model, train_dataloader, loss_function, optimiser):
         model.train()

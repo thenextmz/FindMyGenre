@@ -52,13 +52,15 @@ def getSongsByGenreAndSong():
     song.export('tmpAudioRecording.mp3', format="mp3")
 
     mfcc_song = MP3toSoundStats('tmpAudioRecording.mp3')
-    cos_sim = cosine_similarity(all_features_ids, mfcc_song)
+    cos_sim = cosine_similarity(all_features_ids, [mfcc_song])
+    cos_sim = cos_sim.flatten()
     max_indices = np.argpartition(cos_sim, -10)[-10:]
     song_indices = all_features_ids.iloc[max_indices].index
-    songs = data.loc[song_indices]
+    songs = data.loc[data.track_id.isin(song_indices)]
     songList = []
-    for song in songs:
-        songList.append({"artist": song.artist_name, "song": song.track_title})
+    for song_index in range(len(songs)):
+        songList.append({"artist": songs.iloc[song_index].artist_name, "song": songs.iloc[song_index].track_title, "url": songs.iloc[song_index].track_url})
+
 
     return jsonify(songList)
 

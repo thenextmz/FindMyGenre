@@ -50,6 +50,7 @@ class DataHandler:
 
         for index, key in enumerate(unique_targets):
             self._target_mapping[key] = index
+        
         self._genres_train = self._genres_train.replace(self._target_mapping.keys(), self._target_mapping.values())
         self._genres_test = self._genres_test.replace(self._target_mapping.keys(), self._target_mapping.values())
 
@@ -60,8 +61,8 @@ class DataHandler:
         scaler.fit_transform(self._mfcc_train)
         scaler.transform(self._mfcc_test)
 
-        self._mfcc_all = dataset_feature.mfcc
-        self._genre_all = dataset_target[('track', 'genre_top')]
+        self._mfcc_all = mfccs
+        self._genre_all = genres
 
     @property
     def mfcc_all(self):
