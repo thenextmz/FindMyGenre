@@ -326,7 +326,7 @@ class GenreNeuralNetwork2DTransferLearned:
         self._test_genre = self._data.genres_test.to_numpy()
         #self._test_genre = tf.keras.utils.to_categorical(self._test_genre, dtype="uint8")
 
-        self._model = tf.keras.models.load_model('efficientnetv2l')
+        self._model = tf.keras.models.load_model('densenet201')
         self._epochs = epochs
 
         print('GenreNeuralNetwork2DTransferLearned created')
@@ -402,7 +402,7 @@ class GenreNeuralNetwork2DTransferLearned:
         plt.savefig('graphics.pdf')
 
         self._model = model
-        self._model.save('model_conv2d_transfer_learning')
+        self._model.save('densenet201')
 
     def predict(self, path):
         if self._model is None:
