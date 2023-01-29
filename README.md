@@ -26,7 +26,7 @@ All needed dependencies
 1. Download the [Metadata](https://os.unil.cloud.switch.ch/fma/fma_metadata.zip)
 2. Inside the Project folder go to `backend/` folder and create a folder called `data`
 3. Inside the `data` folder extract the downloaded folder with the metadata
-4. Download [Models](TODO) if you dont want to train them yourself.
+4. Download [Models](https://drive.google.com/drive/folders/1MjA7NJIj5tKMUAhMPO8lEBu_U2VGFoKX?usp=sharing) if you dont want to train them yourself.
 5. Put Models into the `backend/` folder.
 
 ```
