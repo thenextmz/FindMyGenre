@@ -1,3 +1,5 @@
 __pycache__/
 data/
 tmpAudioRecording.mp3
+densenet201/
+efficientnetv2l/
