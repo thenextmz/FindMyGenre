@@ -362,7 +362,7 @@ class GenreNeuralNetwork2DTransferLearned:
 
         self._model = 0
         try:
-            self._model = tf.keras.models.load_model('efficientnetv2l')
+            self._model = tf.keras.models.load_model('densenet201')
         except:
             pass
         self._epochs = epochs
@@ -440,7 +440,7 @@ class GenreNeuralNetwork2DTransferLearned:
         plt.savefig('graphics.pdf')
 
         self._model = model
-        self._model.save('model_conv2d_transfer_learning')
+        self._model.save('densenet201')
 
     def predict(self, path):
         if self._model is None:

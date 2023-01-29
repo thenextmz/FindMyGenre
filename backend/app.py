@@ -47,9 +47,9 @@ def getSongsByGenre():
 
 @app.route('/getSongsByGenreAndSong', methods=['GET'])
 def getSongsByGenreAndSong():
-    bytesOfSong = request.get_data()
-    song = AudioSegment.from_file(io.BytesIO(bytesOfSong), 'm4a')
-    song.export('tmpAudioRecording.mp3', format="mp3")
+    # bytesOfSong = request.get_data()
+    # song = AudioSegment.from_file(io.BytesIO(bytesOfSong), 'm4a')
+    # song.export('tmpAudioRecording.mp3', format="mp3")
 
     mfcc_song = MP3toSoundStats('tmpAudioRecording.mp3')
     cos_sim = cosine_similarity(all_features_ids, [mfcc_song])
@@ -59,10 +59,12 @@ def getSongsByGenreAndSong():
     songs = data.loc[data.track_id.isin(song_indices)]
     songList = []
     for song_index in range(len(songs)):
-        songList.append({"artist": songs.iloc[song_index].artist_name, "song": songs.iloc[song_index].track_title, "url": songs.iloc[song_index].track_url})
+        url = -1
+        if str(songs.iloc[song_index].track_url) != None and str(songs.iloc[song_index].track_url) != "" and str(songs.iloc[song_index].track_url) != "nan":
+            url = songs.iloc[song_index].track_url
+        songList.append({"artist": songs.iloc[song_index].artist_name, "song": songs.iloc[song_index].track_title, "url": url})
 
-
-    return jsonify(songList)
+    return songList
 
 @app.route('/uploadAudio', methods=['POST'])
 def uploadAudio():
@@ -73,7 +75,11 @@ def uploadAudio():
     prediction = neural_network.predict('tmpAudioRecording.mp3')
     prediction_2d = neural_network_2d.predict('tmpAudioRecording.mp3')
     prediction_2d_transfer_learning = neural_network_2d_transfer_learning.predict('tmpAudioRecording.mp3')
-    return Genres[prediction], Genres[prediction_2d], Genres[prediction_2d_transfer_learning]
+    simSongs = getSongsByGenreAndSong()
+    print("1", prediction)
+    print("2", prediction_2d)
+    print("3", prediction_2d_transfer_learning)
+    return [Genres[prediction], Genres[prediction_2d], Genres[prediction_2d_transfer_learning], simSongs]
 
 
 
@@ -85,9 +91,12 @@ def home():
 
 
 def main():
-    
-    #neural_network.fit()
-
+    if len(sys.argv) > 1 and sys.argv[1] == "-t":
+        print("Start Training...")
+        neural_network.fit()
+        neural_network_2d.fit()
+        neural_network_2d_transfer_learning.fit()
+        print("Training Done.")
 
     print('Country: ', Genres[neural_network.predict(os.getcwd() + '/data/other_songs/western-125865.mp3')])
     print('Blues: ', Genres[neural_network.predict(os.getcwd() + '/data/other_songs/midnight-blues-21179.mp3')])
@@ -104,7 +113,7 @@ def main():
     print('Electronic: ', Genres[neural_network.predict(os.getcwd() + '/data/other_songs/drop-it-124014.mp3')])
     print('Electronic: ', Genres[neural_network.predict(os.getcwd() + '/data/other_songs/password-infinity-123276.mp3')])
     print('Electronic: ', Genres[neural_network.predict(os.getcwd() + '/data/other_songs/powerful-beat-121791.mp3')])
-
+   
     app.run(host="0.0.0.0", port=12345)
 
 if __name__=="__main__":
