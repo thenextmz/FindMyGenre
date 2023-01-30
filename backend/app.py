@@ -113,7 +113,7 @@ def main():
     print('Electronic: ', Genres[neural_network.predict(os.getcwd() + '/data/other_songs/drop-it-124014.mp3')])
     print('Electronic: ', Genres[neural_network.predict(os.getcwd() + '/data/other_songs/password-infinity-123276.mp3')])
     print('Electronic: ', Genres[neural_network.predict(os.getcwd() + '/data/other_songs/powerful-beat-121791.mp3')])
-   
+
     app.run(host="0.0.0.0", port=12345)
 
 if __name__=="__main__":
