@@ -55,7 +55,7 @@ class DataHandler:
         all[('track', 'genre_top')] = self._genres_train
         for i in range(len(unique_targets)):
             temp = all[all[('track', 'genre_top')] == i]
-            resamp = skl.utils.resample(temp, replace=True, n_samples=10000, random_state=123)
+            resamp = skl.utils.resample(temp, replace=True, n_samples=20, random_state=123)
             if resampled.empty:
                 resampled = resamp
             else:
