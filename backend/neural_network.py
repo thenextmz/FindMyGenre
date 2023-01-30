@@ -1,5 +1,3 @@
-import sys
-
 import torch
 import pandas as pd
 import numpy as np
@@ -15,11 +13,6 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 EPOCHS = 4
 TRANSFER_HEIGHT = 35
 TRANSFER_WIDTH = 32
-
-#Genres: ['Blues' 'Classical' 'Country' 'Easy Listening' 'Electronic'
-# 'Experimental' 'Folk' 'Hip-Hop' 'Instrumental' 'International' 'Jazz'
-# 'Old-Time / Historic' 'Pop' 'Rock' 'Soul-RnB' 'Spoken']
-#Genre numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 '''
 0: Blues
@@ -39,7 +32,6 @@ TRANSFER_WIDTH = 32
 14: Soul-RnB
 15: Spoken
 '''
-
 
 class ScikitFeatDataset(torch.utils.data.Dataset):
     def __init__(self, X: np.array, y: np.array):
@@ -67,7 +59,7 @@ class GenreNeuralNetwork:
         
         self._model = 0
         try:
-            self._model = torch.load('model_new')
+            self._model = torch.load('model')
         except:
             pass
 
@@ -89,6 +81,7 @@ class GenreNeuralNetwork:
             loss.backward()
             optimiser.step()
             running_loss += loss * len(X)
+    
     def _val_func(self, model, val_dataloader, loss_function):
         model.eval()
         y_real = []
@@ -107,6 +100,7 @@ class GenreNeuralNetwork:
             accuracy = sklearn.metrics.accuracy_score(y_real, outputs)
             
         return validation_loss, accuracy, outputs, y_real
+    
     def _define_model(self, trial):
         layers = []
         activation_function_selection = {"ReLU": torch.nn.ReLU(),
@@ -129,6 +123,7 @@ class GenreNeuralNetwork:
         layers.append(output_activation)
 
         return torch.nn.Sequential(*layers)
+    
     def _objective(self, trial):
         model = self._define_model(trial).to(DEVICE)
         loss_function = torch.nn.CrossEntropyLoss()
@@ -199,7 +194,7 @@ class GenreNeuralNetwork:
         plt.savefig('graphics.pdf')
 
         self._model = model
-        torch.save(self._model, 'model_new')
+        torch.save(self._model, 'model')
 
     def predict(self, path):
         if self._model is None:
@@ -249,6 +244,7 @@ class GenreNeuralNetwork2D:
             loss.backward()
             optimiser.step()
             running_loss += loss * len(X)
+    
     def _val_func(self, model, val_dataloader, loss_function):
         model.eval()
         y_real = []
@@ -272,6 +268,7 @@ class GenreNeuralNetwork2D:
             accuracy = sklearn.metrics.accuracy_score(y_real, outputs)
             print(accuracy)
         return validation_loss, accuracy, outputs, y_real
+    
     def fit(self):
         output_units = len(np.unique(self._data.genres_train))
 
@@ -344,7 +341,7 @@ class GenreNeuralNetwork2DTransferLearned:
         self._train_mfcc = np.hstack((self._train_mfcc, self._train_mfcc))
         self._train_mfcc = np.repeat(self._train_mfcc[..., np.newaxis], 3, -1)
         self._train_mfcc = self._train_mfcc.reshape((self._train_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH, 3))
-        #self._train_mfcc = tf.keras.applications.densenet.preprocess_input(self._train_mfcc)
+        self._train_mfcc = tf.keras.applications.densenet.preprocess_input(self._train_mfcc)
 
         self._train_genre = self._data.genres_train.to_numpy()
         self._train_genre = tf.keras.utils.to_categorical(self._train_genre, dtype="uint8")
@@ -355,10 +352,9 @@ class GenreNeuralNetwork2DTransferLearned:
         self._test_mfcc = np.hstack((self._test_mfcc, self._test_mfcc))
         self._test_mfcc = np.repeat(self._test_mfcc[..., np.newaxis], 3, -1)
         self._test_mfcc = self._test_mfcc.reshape((self._test_mfcc.shape[0], TRANSFER_HEIGHT, TRANSFER_WIDTH, 3))
-        #self._test_mfcc = tf.keras.applications.densenet.preprocess_input(self._test_mfcc)
+        self._test_mfcc = tf.keras.applications.densenet.preprocess_input(self._test_mfcc)
 
         self._test_genre = self._data.genres_test.to_numpy()
-        #self._test_genre = tf.keras.utils.to_categorical(self._test_genre, dtype="uint8")
 
         self._model = 0
         try:
@@ -381,6 +377,7 @@ class GenreNeuralNetwork2DTransferLearned:
             loss.backward()
             optimiser.step()
             running_loss += loss * len(X)
+    
     def _val_func(self, model, val_dataloader, loss_function):
         model.eval()
         y_real = []
@@ -399,6 +396,7 @@ class GenreNeuralNetwork2DTransferLearned:
             accuracy = sklearn.metrics.accuracy_score(y_real, outputs)
             print(accuracy)
         return validation_loss, accuracy, outputs, y_real
+    
     def fit(self):
         output_units = len(np.unique(self._data.genres_train))
 

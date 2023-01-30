@@ -67,10 +67,6 @@ class DataHandler:
         # Shuffle data
         self._mfcc_train, self._genres_train = skl.utils.shuffle(self._mfcc_train, self._genres_train, random_state=9876)
 
-        #scaler = skl.preprocessing.StandardScaler(copy=False)
-        #scaler.fit_transform(self._mfcc_train)
-        #scaler.transform(self._mfcc_test)
-
         self._mfcc_all = mfccs
         self._genre_all = genres
 
