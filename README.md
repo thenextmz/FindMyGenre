@@ -20,6 +20,7 @@ All needed dependencies
 - [tensorflow](https://www.tensorflow.org/)
 - [librosa](https://librosa.org/doc/latest/index.html)
 - [scipy](https://scipy.org/)
+- [ffmpeg](https://phoenixnap.com/kb/install-ffmpeg-ubuntu)
 
 ## Download Data and Create Folder Structure
 
