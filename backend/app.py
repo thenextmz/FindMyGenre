@@ -74,8 +74,6 @@ def uploadAudio():
     simSongs = getSongsByGenreAndSong()
     return [Genres[prediction], Genres[prediction_2d], Genres[prediction_2d_transfer_learning], simSongs]
 
-def demo():
-    return 0
 
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "-t":
@@ -83,10 +81,7 @@ def main():
         neural_network.fit()
         neural_network_2d.fit()
         neural_network_2d_transfer_learning.fit()
-        print("Training Done.")
-
-    if len(sys.argv) > 1 and sys.argv[1] == "-d":
-        demo()     
+        print("Training Done.")    
    
     app.run(host="0.0.0.0", port=12345)
 
