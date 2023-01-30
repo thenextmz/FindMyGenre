@@ -287,7 +287,7 @@ class GenreNeuralNetwork2D:
             torch.nn.MaxPool2d(kernel_size=3),
             torch.nn.Flatten(),
             torch.nn.Linear(32, output_units),
-            torch.nn.Softmax(dim=1)]
+            torch.nn.Sigmoid()]
 
 
         model = torch.nn.Sequential(*layer).to(DEVICE)
