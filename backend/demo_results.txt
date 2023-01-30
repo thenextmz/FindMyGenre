@@ -1,0 +1,93 @@
+##########################################
+#         Classify Demo Audio            #
+##########################################
+Song 1
+NN1: Electronic (Orig. Lable: POP/ROCK)
+NN2: Pop (Orig. Lable: POP/ROCK)
+NN3: International (Orig. Lable: POP/ROCK)
+------------------------------------------------------
+Song 2
+NN1: Pop (Orig. Lable: POP/ROCK)
+NN2: Soul-RnB (Orig. Lable: POP/ROCK)
+NN3: International (Orig. Lable: POP/ROCK)
+------------------------------------------------------
+Song 3
+NN1: Electronic (Orig. Lable: POP/ROCK)
+NN2: Rock (Orig. Lable: POP/ROCK)
+NN3: International (Orig. Lable: POP/ROCK)
+------------------------------------------------------
+Song 4
+NN1: Rock (Orig. Lable: ROCK/PUNK/INDIE/ELECTRO)
+NN2: Rock (Orig. Lable: ROCK/PUNK/INDIE/ELECTRO)
+NN3: International (Orig. Lable: ROCK/PUNK/INDIE/ELECTRO)
+------------------------------------------------------
+Song 5
+NN1: Rock (Orig. Lable: ROCK/PUNK/INDIE/ELECTRO)
+NN2: Rock (Orig. Lable: ROCK/PUNK/INDIE/ELECTRO)
+NN3: International (Orig. Lable: ROCK/PUNK/INDIE/ELECTRO)
+------------------------------------------------------
+Song 6
+NN1: Folk (Orig. Lable: OUNTRY/FOLK)
+NN2: Experimental (Orig. Lable: OUNTRY/FOLK)
+NN3: International (Orig. Lable: OUNTRY/FOLK)
+------------------------------------------------------
+Song 7
+NN1: Folk (Orig. Lable: OUNTRY/FOLK)
+NN2: Instrumental (Orig. Lable: OUNTRY/FOLK)
+NN3: International (Orig. Lable: OUNTRY/FOLK)
+------------------------------------------------------
+Song 8
+NN1: Folk (Orig. Lable: BLUES/COUNTRY/FOLK/INDIE)
+NN2: Pop (Orig. Lable: BLUES/COUNTRY/FOLK/INDIE)
+NN3: International (Orig. Lable: BLUES/COUNTRY/FOLK/INDIE)
+------------------------------------------------------
+Song 9
+NN1: Old-Time / Historic (Orig. Lable: HISTORIC)
+NN2: Instrumental (Orig. Lable: HISTORIC)
+NN3: International (Orig. Lable: HISTORIC)
+------------------------------------------------------
+Song 10
+NN1: Classical (Orig. Lable: HISTORIC)
+NN2: Instrumental (Orig. Lable: HISTORIC)
+NN3: Old-Time / Historic (Orig. Lable: HISTORIC)
+------------------------------------------------------
+Song 11
+NN1: Old-Time / Historic (Orig. Lable: HISTORIC)
+NN2: Instrumental (Orig. Lable: HISTORIC)
+NN3: International (Orig. Lable: HISTORIC)
+------------------------------------------------------
+Song 12
+NN1: Old-Time / Historic (Orig. Lable: HISTORIC
+NN2: Instrumental (Orig. Lable: HISTORIC)
+NN3: International (Orig. Lable: HISTORIC)
+------------------------------------------------------
+Song 13
+NN1: Experimental (Orig. Lable: HISTORIC/INSTRUMENTAL
+NN2: Instrumental (Orig. Lable: HISTORIC/INSTRUMENTAL)
+NN3: International (Orig. Lable: HISTORIC/INSTRUMENTAL)
+------------------------------------------------------
+Song 14
+NN1: Jazz (Orig. Lable: JAZZ/ELECTRONIC
+NN2: Instrumental (Orig. Lable:  JAZZ/ELECTRONIC)
+NN3: International (Orig. Lable:  JAZZ/ELECTRONIC)
+------------------------------------------------------
+Song 15
+NN1: Electronic (Orig. Lable:  JAZZ/ELECTRONIC/HIPHOP)
+NN2: Experimental (Orig. Lable: JAZZ/ELECTRONIC/HIPHOP)
+NN3: International (Orig. Lable: JAZZ/ELECTRONIC/HIPHOP)
+------------------------------------------------------
+Song 16
+NN1: Hip-Hop (Orig. Lable:  HIPHOP)
+NN2: Hip-Hop (Orig. Lable: HIPHOP)
+NN3: International (Orig. Lable: HIPHOP)
+------------------------------------------------------
+Song 17
+NN1: Hip-Hop (Orig. Lable:  HIPHOP)
+NN2: Hip-Hop (Orig. Lable: HIPHOP)
+NN3: International (Orig. Lable: HIPHOP)
+------------------------------------------------------
+Song 19
+NN1: Rock (Orig. Lable:  ROCK)
+NN2: Rock (Orig. Lable: ROCK)
+NN3: International (Orig. Lable: ROCK)
+------------------------------------------------------
