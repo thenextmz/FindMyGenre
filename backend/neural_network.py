@@ -196,7 +196,7 @@ class GenreNeuralNetwork:
         self._model = model
         torch.save(self._model, 'model')
 
-    def predict(self, path):
+    def predict(self, path: str):
         if self._model is None:
             print("Train network before predicting")
             return
@@ -206,6 +206,15 @@ class GenreNeuralNetwork:
         res =  self._model(torch.Tensor(sound_stats))
         res = res.argmax(dim=1).cpu().detach().numpy()
         return res[0]
+
+    def predict_mfcc(self, mfcc):
+        if self._model is None:
+            print("Train network before predicting")
+            return
+        res =  self._model(torch.Tensor(mfcc))
+        print(res)
+        res = res.argmax(dim=0).cpu().detach().numpy()
+        return res
 
 class GenreNeuralNetwork2D:
     def __init__(self, data, epochs = 10):
@@ -266,7 +275,6 @@ class GenreNeuralNetwork2D:
             outputs = np.array(outputs)
             outputs.flatten()
             accuracy = sklearn.metrics.accuracy_score(y_real, outputs)
-            print(accuracy)
         return validation_loss, accuracy, outputs, y_real
     
     def fit(self):
@@ -320,12 +328,24 @@ class GenreNeuralNetwork2D:
         self._model = model
         torch.save(self._model, 'model_conv2d')
 
-    def predict(self, path):
+    def predict(self, path: str):
         if self._model is None:
             print("Train network before predicting")
             return
 
         sound_stats = MP3toSoundStats(path)
+        sound_stats = sound_stats.reshape((1,1,14,10))
+
+        res =  self._model(torch.Tensor(sound_stats))
+        res = res.argmax(dim=1).cpu().detach().numpy()
+        return res[0]
+
+    def predict_mfcc(self, mfcc):
+        if self._model is None:
+            print("Train network before predicting")
+            return
+
+        sound_stats = mfcc
         sound_stats = sound_stats.reshape((1,1,14,10))
 
         res =  self._model(torch.Tensor(sound_stats))
@@ -365,38 +385,6 @@ class GenreNeuralNetwork2DTransferLearned:
 
         print('GenreNeuralNetwork2DTransferLearned created')
 
-    def _train_func(self, model, train_dataloader, loss_function, optimiser):
-        model.train()
-        running_loss = 0
-        for X, y in train_dataloader:
-            optimiser.zero_grad()
-            X = X.to(DEVICE, dtype=torch.float)
-            y = y.to(DEVICE, dtype=torch.long)
-            output = model(X)
-            loss = loss_function(output, y)
-            loss.backward()
-            optimiser.step()
-            running_loss += loss * len(X)
-    
-    def _val_func(self, model, val_dataloader, loss_function):
-        model.eval()
-        y_real = []
-        outputs = []
-        running_loss = 0
-        with torch.no_grad():
-            for X, y in val_dataloader:
-                X = X.to(DEVICE, dtype=torch.float)
-                y = y.to(DEVICE, dtype=torch.long)
-                output = model(X)
-                loss = loss_function(output, y)
-                running_loss += loss * len(X)
-                outputs += [output.argmax(dim=1).cpu().detach().numpy()]
-                y_real += [y.cpu().detach().numpy()]
-            validation_loss = running_loss / len(val_dataloader)
-            accuracy = sklearn.metrics.accuracy_score(y_real, outputs)
-            print(accuracy)
-        return validation_loss, accuracy, outputs, y_real
-    
     def fit(self):
         output_units = len(np.unique(self._data.genres_train))
 
