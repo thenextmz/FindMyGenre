@@ -45,8 +45,8 @@ def getSongsByGenre():
     return jsonify(songList)
 
 
-def getSongsByGenreAndSong():
-    mfcc_song = MP3toSoundStats('tmpAudioRecording.mp3')
+def getSongsByGenreAndSong(path = 'tmpAudioRecording.mp3'):
+    mfcc_song = MP3toSoundStats(path)
     cos_sim = cosine_similarity(all_features_ids, [mfcc_song])
     cos_sim = cos_sim.flatten()
     max_indices = np.argpartition(cos_sim, -10)[-10:]
@@ -169,7 +169,101 @@ def classifyDemoSongs():
     print('NN3:', Genres[neural_network_2d_transfer_learning.predict(os.getcwd() + '/data/test_songs/Rock/ACDC.mp3')], "(Orig. Lable: ROCK)")
     print("------------------------------------------------------")
 
-
+def simDemo():
+    print("##########################################")
+    print("#              Sim Demo Audio            #")
+    print("##########################################")
+    print("Song 1")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Rock/PopRock.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 2")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Rock/PopRock1.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 3")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Rock/PopRock2.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 4")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Rock/RockPunkIndieElectro.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 5")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Rock/RockPunkIndieElectro1.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 6")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Folk/CountryFolk2.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 7")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Folk/CountryFolk4.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 8")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Folk/BluesCountryFolkIndie.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 9")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Historic/Historic.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 10")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Historic/Historic1.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 11")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Historic/Historic2.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 12")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Historic/Historic3.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 13")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Historic/HistoricInstrumental.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 14")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Jazz/JazzElectronic.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 15")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Jazz/JazzElectronicHiphot.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 16")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/HIPHOP/HIPHOP.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 17")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/HIPHOP/HIPHOP2.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    print("Song 19")
+    simSongs = getSongsByGenreAndSong(path = os.getcwd() + '/data/test_songs/Rock/ACDC.mp3')
+    for i, song in enumerate(simSongs):
+        print(str(i) + ":", str(song["url"]))
+    print("------------------------------------------------------")
+    
 
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "-t":
@@ -181,6 +275,9 @@ def main():
 
     if len(sys.argv) > 1 and sys.argv[1] == "-d":
         classifyDemoSongs()
+
+    if len(sys.argv) > 1 and sys.argv[1] == "-s":
+        simDemo()    
 
    
     app.run(host="0.0.0.0", port=12345)
